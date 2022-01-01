@@ -232,6 +232,13 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 				end
 
+				if( v["HealthScale"] ) then
+
+					npc:SetMaxHealth( npc:GetMaxHealth() * v["HealthScale"] )
+					npc:SetHealth( npc:Health() * v["HealthScale"] )
+
+				end
+
 			end
 
 		else

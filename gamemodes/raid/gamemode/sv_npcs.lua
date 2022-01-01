@@ -112,7 +112,7 @@ GM.EnemyTypes = {
 			["Reward"] = 23,
 			["CustomModel"] = "models/combine_super_soldier.mdl",
 			["DamageScale"] = 1.6,
-			["ResistScale"] = 0.75,
+			["HealthScale"] = 2,
 		},
 		["npc_manhack"] = {
 			["NPC"] = "npc_manhack",
