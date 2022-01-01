@@ -106,7 +106,7 @@ function GM:OnNPCKilled( npc, attacker, inf )
 
 		if( table.IsEmpty( self.ActiveEnemies ) ) then
 
-			attacker:EmitSound( "buttons/button1.wav" )
+			attacker:EmitSound( "buttons/button1.wav", 90 )
 
 			timer.Simple( 3, function() self:EndRaid() end )
 
@@ -126,9 +126,8 @@ function GM:DoPlayerDeath( ply, attacker, inf )
 			net.WriteUInt( ply.Money, 32 );
 		net.Send( attacker )
 
-		
-
 		if( self.SquadState == STATE_IDLE ) then
+			
 			attacker:EmitSound( "ambient/alarms/klaxon1.wav" );
 			attacker:Kill()
 
