@@ -78,7 +78,7 @@ function GM:EndRaid()
 
 			v:SetPos( table.Random( self.Spawns ) )
 
-			if( ply:Alive() ) then
+			if( v:Alive() ) then
 
 				self:GiveMoney( v, math.random( 5, 15 ) )
 
