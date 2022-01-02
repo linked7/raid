@@ -66,5 +66,4 @@ GM.Weapons = {
 	{ "weapon_bfg_oicw", 0.75 },
 	{ "weapon_bfg_hl2_sniper", 0.75 },
 	{ "weapon_bfg_hl2_annabelle", 0.35 },
-	
 };

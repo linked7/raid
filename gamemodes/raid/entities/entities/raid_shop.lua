@@ -91,9 +91,9 @@ if( CLIENT ) then
 		shopFrame.lblTitle:SetFont( "DebugFixed" );
 		shopFrame:MakePopup();
 			
-		shopFrame.ContentPane = vgui.Create( "DPanel", shopFrame );
-		shopFrame.ContentPane:SetPos( 0, 18 );
-		shopFrame.ContentPane:SetSize( 800, 482 );
+		shopFrame.ContentPane = vgui.Create( "DScrollPanel", shopFrame );
+		shopFrame.ContentPane:SetPos( 0, 25 );
+		shopFrame.ContentPane:SetSize( 550, 365 );
 		function shopFrame.ContentPane:Paint() end
 			
 	--[[local ntext = "You have £" .. LocalPlayer().Money .. ".";
