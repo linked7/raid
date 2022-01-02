@@ -42,15 +42,19 @@ function GM:GetDanger()
 
 	for a, ply in pairs( player.GetAll() ) do
 
-		for k, v in pairs( self.Weapons ) do
+		if( ply:Alive() ) then
 
-			if( ply:HasWeapon( v[1] ) ) then
+			for k, v in pairs( self.Weapons ) do
 
-				danger = danger + v[2]
+				if( ply:HasWeapon( v[1] ) ) then
+
+					danger = danger + v[2]
+
+				end
+
+				danger = danger + ( ply:Armor() / 100 )
 
 			end
-
-			danger = danger + ( ply:Armor() / 100 )
 
 		end
 
@@ -74,7 +78,11 @@ function GM:EndRaid()
 
 			v:SetPos( table.Random( self.Spawns ) )
 
-			self:GiveMoney( v, math.random( 5, 15 ) )
+			if( ply:Alive() ) then
+
+				self:GiveMoney( v, math.random( 5, 15 ) )
+
+			end
 
 			self.SquadState = STATE_IDLE
 			self.ForceRaidEnd = 0
