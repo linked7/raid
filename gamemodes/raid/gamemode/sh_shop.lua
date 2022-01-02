@@ -23,7 +23,7 @@ GM.Shop = {
 	},
 	["Ammo"] = {
 		{ "Pistol", "item_ammo_pistol", 5 },
-		{ "Pistol x5", "item_ammo_pistol_large", 50 },
+		{ "Pistol x5", "item_ammo_pistol_large", 25 },
 		{ "SMG", "item_ammo_smg1", 10 },
 		{ "Shotgun", "item_box_buckshot", 30 },
 		{ ".357", "item_ammo_357", 10 },
