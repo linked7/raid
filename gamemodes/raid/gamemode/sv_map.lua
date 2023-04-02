@@ -37,8 +37,10 @@ function GM:InitPostEntity()
 			
 			purpose:Spawn();
 			purpose:Activate();
-			purpose:GetPhysicsObject():EnableMotion( false );
-			purpose.Static = true;
+			if( purpose and purpose:IsValid() and purpose:GetPhysicsObject() and purpose:GetPhysicsObject():IsValid() ) then
+				purpose:GetPhysicsObject():EnableMotion( false );
+				purpose.Static = true;
+			end
 			
 		end
 		
