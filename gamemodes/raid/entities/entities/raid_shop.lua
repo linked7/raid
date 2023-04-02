@@ -37,7 +37,7 @@ function ENT:Initialize()
 	
 	self:SetUseType( SIMPLE_USE );
 	
-	self:SetModel( "models/props_combine/combine_interface001a.mdl" );
+	self:SetModel( "models/props_combine/breenconsole.mdl" );
 	self:PhysicsInit( SOLID_VPHYSICS );
 	
 	local phys = self:GetPhysicsObject();
