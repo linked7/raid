@@ -57,13 +57,13 @@ local function SpawnUpdateClient( ply )
 	net.Send( ply );
 
 	GAMEMODE:GiveMoney( ply, 0 ) -- to ensure they get money on initial spawn
-	
+
 end
 hook.Add( "PlayerSpawn", "Spawn_Client_Update", SpawnUpdateClient )
 
 function GM:GiveMoney( ply, amt )
 
-	if( !ply.Money ) then 
+	if( !ply.Money ) then
 		ply.Money = 0
 	end
 
@@ -127,7 +127,7 @@ function GM:DoPlayerDeath( ply, attacker, inf )
 		net.Send( attacker )
 
 		if( self.SquadState == STATE_IDLE ) then
-			
+
 			attacker:EmitSound( "ambient/alarms/klaxon1.wav" );
 			attacker:Kill()
 
@@ -145,7 +145,7 @@ end
 
 GM.BannedWeaponPickups = {
 	--"weapon_crowbar",
-	"weapon_stunstick", 
+	"weapon_stunstick",
 	"weapon_pistol",
 	"weapon_smg1",
 	"weapon_ar2",
@@ -156,20 +156,20 @@ GM.BannedWeaponPickups = {
 	"weapon_annabelle",
 };
 function GM:PlayerCanPickupWeapon( ply, wep )
-	
+
 	if( table.HasValue( self.BannedWeaponPickups, wep:GetClass() ) and self.SquadState == STATE_ACTIVE ) then
-		
+
 		return false;
-		
+
 	end
-	
+
 	return true;
-	
+
 end
 
 function GM:PlayerShouldTakeDamage(ply, attacker)
 	if ((attacker:GetClass() == "prop_physics" and attacker:GetModel() ~= "models/props_c17/trappropeller_blade.mdl") or attacker:GetClass() == "prop_ragdoll" or attacker:GetClass() == "prop_combine_ball" ) then return false; end
-	
+
 	return true;
 end
 
@@ -194,5 +194,5 @@ function GM:EntityTakeDamage(ent, dmg)
 		dmg:ScaleDamage( dmg:GetAttacker().CustomDamageScale )
 
 	end
-	
+
 end

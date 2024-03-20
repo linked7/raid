@@ -20,3 +20,4 @@ function nUpdateMoney( len )
 		
 end
 net.Receive( "nUpdateMoney", nUpdateMoney );
+

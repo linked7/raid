@@ -72,7 +72,7 @@ function GM:EndRaid()
 
 	self.ActiveEnemies = {};
 
-	timer.Simple( 0.05 , function() 
+	timer.Simple( 0.05 , function()
 		self:InitPostEntity()
 		for k, v in pairs( player.GetAll() ) do
 
@@ -97,7 +97,7 @@ function GM:EndRaid()
 		end
 
 	end)
-	
+
 end
 
 function GM:RaidPlayers( location )
@@ -151,7 +151,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 		local anything = false
 
-		if( v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
+ 	if( v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
 
 			if( upgradeNPCs == true ) then
 
@@ -214,7 +214,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 				for _, ply in pairs(player.GetAll()) do
 
-					npc:AddEntityRelationship( ply, D_HT, 99 );
+--					npc:AddEntityRelationship( ply, D_HT, 99 ); -- must be disabled for custom npcs
 
 				end
 
@@ -260,7 +260,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 			print("weapon " .. v["Weapon"] )
 
-		end	
+		end
 		print("danger transaction: " .. dangerLevel .. " - " .. v["Price"] )
 		print("bust: " .. bust )
 

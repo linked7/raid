@@ -1,7 +1,16 @@
 GM.EnemyTypes = {
-	["CCA"] = {
+	["Custom"] = {
+		["raidman"] = {
+			["NPC"] = "raidman",
+			["Weight"] = 1,
+			["Price"] = 0.3,
+			["Reward"] = 10,
+		},
+	},
+	--[[["CCA"] = {
+		--[[
 		["cop_stunstick"] = {
-			["NPC"] = "npc_metropolice",
+			["NPC"] = "npc_metropo zlice",
 			["Weapon"] = "weapon_stunstick",
 			["Weight"] = 4,
 			["Price"] = 0.3,
@@ -22,14 +31,14 @@ GM.EnemyTypes = {
 			["Price"] = 0.5,
 			["Reward"] = 10,
 		},
-	--[[["cop_smg_manhack"] = {
+	["cop_smg_manhack"] = {
 			["NPC"] = "npc_metropolice",
 			["Weapon"] = "weapon_smg1",
 			["Weight"] = 2,
 			["Price"] = 0.6,
 			["Reward"] = 11,
 			["Manhack"] = true,
-		},--]]
+		},
 		["npc_manhack"] = {
 			["NPC"] = "npc_manhack",
 			["Weight"] = 1,
@@ -170,4 +179,5 @@ GM.EnemyTypes = {
 			["DamageScale"] = 2.5,
 		},
 	},
+	--]]
 };
