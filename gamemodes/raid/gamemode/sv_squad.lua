@@ -17,6 +17,7 @@ function GM:StartRaid()
 	self.SquadState = STATE_ACTIVE
 
 	local enemyType = table.Random( self.EnemyTypes )
+	local enemyType = table.Copy( self.EnemyTypes["Custom"] )
 
 	local location = table.Random( self.Arenas )
 
@@ -31,7 +32,7 @@ function GM:StartRaid()
 	net.Start( "nUpdateRaidStart" );
 		net.WriteUInt( self.ForceRaidEnd, 16 );
 		net.WriteUInt( self.SquadState, 4 )
-		net.WriteUInt( dangerLevel, 16 )
+		net.WriteFloat( dangerLevel )
 	net.Broadcast();
 
 end
@@ -151,7 +152,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 		local anything = false
 
- 	if( v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
+ 		if( v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
 
 			if( upgradeNPCs == true ) then
 
