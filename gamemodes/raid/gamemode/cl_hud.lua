@@ -53,7 +53,7 @@ function GM:HUDPaint()
 		draw.SimpleTextOutlined( "Raid Time: " .. math.Round( self.ForceRaidEnd - CurTime() ), "ChatFont", ScrW() - 25, ScrH() - y, Color( 200, 200, 0, 200 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color( 0, 0, 0, 255 ) );
 		y = y + 20
 
-		draw.SimpleTextOutlined( "Raid Threat: " .. math.Round( self.Threat, 1 ), "ChatFont", ScrW() - 25, ScrH() - y, Color( 200, 200, 0, 200 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color( 0, 0, 0, 255 ) );
+		draw.SimpleTextOutlined( "Raid Threat: " .. math.Round( self.Threat, 2 ), "ChatFont", ScrW() - 25, ScrH() - y, Color( 200, 200, 0, 200 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color( 0, 0, 0, 255 ) );
 		y = y + 20
 
 	end
