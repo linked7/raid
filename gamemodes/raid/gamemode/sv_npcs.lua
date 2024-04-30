@@ -6,6 +6,18 @@ GM.EnemyTypes = {
 			["Price"] = 0.3,
 			["Reward"] = 10,
 		},
+		["raidman"] = {
+			["NPC"] = "raidman",
+			["Weight"] = 1,
+			["Price"] = 0.3,
+			["Reward"] = 10,
+		},
+		["raidman"] = {
+			["NPC"] = "raidman",
+			["Weight"] = 1,
+			["Price"] = 0.3,
+			["Reward"] = 10,
+		},
 	},
 	--[[["CCA"] = {
 		--[[
