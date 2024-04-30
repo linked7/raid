@@ -16,9 +16,15 @@ SWEP.Spawnable		= false
 SWEP.AdminOnly		= false
 
 SWEP.Primary.ClipSize		= 8			-- Size of a clip
-SWEP.Primary.DefaultClip	= 32		-- Default number of bullets in a clip
+SWEP.Primary.DefaultClip	= 8		-- Default number of bullets in a clip
 SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
+SWEP.Primary.Damage			= 8
+SWEP.Primary.Sound			= "Weapon_AR2.Single"
+SWEP.Primary.Delay			= 0.4
+SWEP.Primary.NumBullets		= 1
+SWEP.Primary.Accuracy		= 0.03
+
 
 SWEP.Secondary.ClipSize		= 8			-- Size of a clip
 SWEP.Secondary.DefaultClip	= 32		-- Default number of bullets in a clip
@@ -45,10 +51,10 @@ function SWEP:PrimaryAttack()
 	if ( !self:CanPrimaryAttack() ) then return end
 
 	-- Play shoot sound
-	self:EmitSound( "Weapon_AR2.Single" )
+	self:EmitSound( self.Primary.Sound )
 
 	-- Shoot 9 bullets, 150 damage, 0.75 aimcone
-	self:ShootBullet( 150, 1, 0.01, self.Primary.Ammo )
+	self:ShootBullet( self.Primary.Damage, self.Primary.NumBullets, self.Primary.Aimcone, self.Primary.Ammo )
 
 	-- Remove 1 bullet from our clip
 	self:TakePrimaryAmmo( 1 )
