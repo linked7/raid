@@ -88,6 +88,42 @@ function ENT:BodyUpdate()
 	self:BodyMoveXY()
 end
 
+----------------------------------------------------
+-- ENT:RunBehaviour()
+-- This is where the meat of our AI is
+----------------------------------------------------
+function ENT:RunBehaviour()
+    local wep = self:GetActiveLuaWeapon()
+	while true do
+		
+		if( self:Health() < self:GetMaxHealth() / 2 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 2 ) then 
+			self:RunToRandomLocation()
+		end
+		if self:HaveEnemy() then
+			
+			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
+			self:SetPoseParameter("aim_pitch",0)
+			self.loco:SetDesiredSpeed(50)
+			self.NextFire = CurTime()+1
+
+			if math.random(1,2) == 1 then
+				self:ChargeEnemy()
+			else
+				self:GoAwayFromEnemy()
+			end
+			
+		else
+			self:StartActivity(ACT_HL2MP_WALK)
+			self:SetPoseParameter("aim_pitch",40)
+			self.loco:SetDesiredSpeed(50)
+			self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 100)
+			self:StartActivity(ACT_HL2MP_IDLE)
+		end
+		
+		coroutine.wait(2)
+	end
+end	
+
 function ENT:RunToRandomLocation()
 	self:StartActivity(ACT_HL2MP_RUN_PANICKED)
 	self.loco:SetDesiredSpeed(200)
@@ -104,8 +140,9 @@ function ENT:GoAwayFromEnemy()
 	path:Compute(self, self:GetEnemy():GetPos())
     
 	if not path:IsValid() then return "failed" end
+	local timeout = CurTime() + math.random(2,3)
 
-	while path:IsValid() and self:HaveEnemy() do
+	while path:IsValid() and self:HaveEnemy() and timeout > CurTime() do
 		if path:GetAge() > 0.1 then
 			local vec = vec or self:GetPos()
 			local vec = (self:GetPos() - self:GetEnemy():GetPos()):Angle():Forward() * 50
@@ -145,11 +182,13 @@ function ENT:ChargeEnemy()
     
 	if not path:IsValid() then return "failed" end
 
+	local timeout = CurTime() + math.random(6,12)
+
 	while path:IsValid() and self:HaveEnemy() do
 		if path:GetAge() > 0.1 then
 			local vec = vec or self:GetPos()
 			local vec = (self:GetPos() + self:GetEnemy():GetPos()):GetNormalized() * 100
-			local newPos = self:GetPos() + vec
+		--[[local newPos = self:GetPos() + vec
 			local tr = util.TraceLine({
 				start = self:GetPos(),
 				endpos = newPos,
@@ -157,8 +196,8 @@ function ENT:ChargeEnemy()
 			})
 			if tr.Hit then
 				newPos = tr.HitPos + tr.HitNormal * 128
-			end
-			path:Compute(self, newPos)
+			end--]]
+			path:Compute(self, self:GetPos() + vec)
 			self:WeaponPrimaryAttack()
 			self.loco:FaceTowards(self:GetEnemy():GetPos())
 			if self.NextCrouch < CurTime() then
@@ -254,33 +293,6 @@ function ENT:OnKilled(dmginfo)
 	hook.Call("OnNPCKilled", GAMEMODE, self, dmginfo:GetAttacker(), dmginfo:GetInflictor())
 	SafeRemoveEntityDelayed(self, 0.05)
 end
-
-----------------------------------------------------
--- ENT:RunBehaviour()
--- This is where the meat of our AI is
-----------------------------------------------------
-function ENT:RunBehaviour()
-    local wep = self:GetActiveLuaWeapon()
-	while true do
-		if self:HaveEnemy() then
-			
-			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
-			self:SetPoseParameter("aim_pitch",0)
-			self.loco:SetDesiredSpeed(50)
-			self.NextFire = CurTime()+1
-			table.behaviours = table.behaviours or { self:ChargeEnemy(), self:GoAwayFromEnemy(), self:RunToRandomLocation() }
-		else
-			self:StartActivity(ACT_HL2MP_WALK)
-			--self:Give("scientist_geiger")
-			self:SetPoseParameter("aim_pitch",40)
-			self.loco:SetDesiredSpeed(50)
-			self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 100)
-			self:StartActivity(ACT_HL2MP_IDLE)
-		end
-		
-		coroutine.wait(2)
-	end
-end	
 
 function ENT:Reload()
 	local wep = self:GetActiveLuaWeapon()
