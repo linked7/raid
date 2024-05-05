@@ -12,10 +12,7 @@ function ENT:Initialize()
 	self:SetModel(self.PlayerModel)
 	
 	self.LoseTargetDist	= 1200
-	self.SearchRadius 	= 100
-    self:SetHealth(30)
-
-    self.OwnWeapon = table.Random( { "weapon_raid_pistol",} )
+	self.SearchRadius 	= 1800
 
 	self.NextFire = CurTime()
 	self.NextSound = CurTime()+1
@@ -24,8 +21,7 @@ function ENT:Initialize()
 
 	self.Healing = false
 	self.Foot = false
-
-	self:Give(self.OwnWeapon)
+	
 end
 
 
@@ -92,21 +88,28 @@ function ENT:BodyUpdate()
 	self:BodyMoveXY()
 end
 
+function ENT:RunToRandomLocation()
+	self:StartActivity(ACT_HL2MP_RUN_PANICKED)
+	self.loco:SetDesiredSpeed(200)
+	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+	coroutine.yield()
+	return "ok"
+end
+
 function ENT:GoAwayFromEnemy()
 	print("running")
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
-	path:Compute(self, self:GetEnemy():GetPos()+Vector(0,0,50))
+	path:Compute(self, self:GetEnemy():GetPos())
     
 	if not path:IsValid() then return "failed" end
 
 	while path:IsValid() and self:HaveEnemy() do
 		if path:GetAge() > 0.1 then
 			local vec = vec or self:GetPos()
-			vec = (self:GetPos() - self:GetEnemy():GetPos()):Angle():Forward()*100
-			path:Compute(self, self:GetPos()+vec)
-			print("firing")
+			local vec = (self:GetPos() - self:GetEnemy():GetPos()):Angle():Forward() * 50
+			path:Compute(self, self:GetPos() + vec)
 			self:WeaponPrimaryAttack()
 			self.loco:FaceTowards(self:GetEnemy():GetPos())
 			if self.NextCrouch < CurTime() then
@@ -116,7 +119,56 @@ function ENT:GoAwayFromEnemy()
 					self.loco:SetDesiredSpeed(38)
 				else
 					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
-					self.loco:SetDesiredSpeed(60)
+					self.loco:SetDesiredSpeed(90)
+				end
+			end
+        end
+		path:Update(self)
+		self.loco:FaceTowards(self:GetEnemy():GetPos())
+
+		if (self.loco:IsStuck()) then
+			self:HandleStuck()
+			return "stuck"
+		end
+
+		coroutine.yield()
+	end
+
+	return "ok"
+end
+
+function ENT:ChargeEnemy()
+	local path = Path("Follow")
+	path:SetMinLookAheadDistance(0)
+	path:SetGoalTolerance(20)
+	path:Compute(self, self:GetEnemy():GetPos())
+    
+	if not path:IsValid() then return "failed" end
+
+	while path:IsValid() and self:HaveEnemy() do
+		if path:GetAge() > 0.1 then
+			local vec = vec or self:GetPos()
+			local vec = (self:GetPos() + self:GetEnemy():GetPos()):GetNormalized() * 100
+			local newPos = self:GetPos() + vec
+			local tr = util.TraceLine({
+				start = self:GetPos(),
+				endpos = newPos,
+				filter = self
+			})
+			if tr.Hit then
+				newPos = tr.HitPos + tr.HitNormal * 128
+			end
+			path:Compute(self, newPos)
+			self:WeaponPrimaryAttack()
+			self.loco:FaceTowards(self:GetEnemy():GetPos())
+			if self.NextCrouch < CurTime() then
+				self.NextCrouch = CurTime() + 1
+				if math.random(1,8) == 2 then 
+					self:StartActivity(ACT_HL2MP_WALK_CROUCH_REVOLVER)
+					self.loco:SetDesiredSpeed(70)
+				else
+					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
+					self.loco:SetDesiredSpeed(110)
 				end
 			end
         end
@@ -150,6 +202,9 @@ function ENT:HaveEnemy()
 		elseif ( self:GetEnemy():IsPlayer() and !self:GetEnemy():Alive() ) then
 			return self:FindEnemy()		-- Return false if the search finds nothing
 		end
+		if( self:GetEnemy():GetClass() == self:GetClass() ) then 
+			return self:FindEnemy()
+		end
 		-- The enemy is neither too far nor too dead so we can return true
 		return true
 	else
@@ -172,10 +227,11 @@ function ENT:FindEnemy()
 	for k,v in ipairs( _ents ) do
 		if ( v:IsPlayer() ) then
 			-- We found one so lets set it as our enemy and return true
-			self:SetEnemy(v)
-			print("enemy found: " .. v:Nick() )
-			self:PlaySequenceAndWait("ACT_SIGNAL_HALT")
-			return true
+			if self:Visible(v) then
+				self:SetEnemy(v)
+				return true
+			end
+			--self:PlaySequenceAndWait("ACT_SIGNAL_HALT")
 		end
 	end
 	-- We found nothing so we will set our enemy as nil (nothing) and return false
@@ -184,7 +240,9 @@ function ENT:FindEnemy()
 end
 
 function ENT:OnInjured(info)
-	self.Enemy = info:GetAttacker()
+	if( info:GetAttacker():IsPlayer() ) then
+		self.Enemy = info:GetAttacker()
+	end
 	--self:FindEnemy()
 	self.NextFire = CurTime()+0.1
 	self:EmitSound("placenta/pain/prole5.wav")
@@ -210,8 +268,7 @@ function ENT:RunBehaviour()
 			self:SetPoseParameter("aim_pitch",0)
 			self.loco:SetDesiredSpeed(50)
 			self.NextFire = CurTime()+1
-			print( wep.CurAmmo)
-			self:GoAwayFromEnemy()
+			table.behaviours = table.behaviours or { self:ChargeEnemy(), self:GoAwayFromEnemy(), self:RunToRandomLocation() }
 		else
 			self:StartActivity(ACT_HL2MP_WALK)
 			--self:Give("scientist_geiger")
@@ -226,7 +283,6 @@ function ENT:RunBehaviour()
 end	
 
 function ENT:Reload()
-	print("reloading")
 	local wep = self:GetActiveLuaWeapon()
 	if wep.Reloading then return end
 	self:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_REVOLVER)
@@ -257,10 +313,20 @@ function ENT:WeaponPrimaryAttack()
 		self:Heal()
 	end
 
+	local trace = {}
+	trace.start = wep:GetPos()+Vector(0,0,50)
+	trace.endpos = wep:GetPos()+Vector(0,0,50) + self:GetEnemy():GetPos()-wep:GetPos()
+	trace.filter = self -- Exclude self from the trace
+	local tr = util.TraceLine(trace)
+	if( IsValid(tr.Entity) and tr.Entity:GetClass() == self:GetClass() ) then
+		print("HOLDING FIRE")
+		return -- Do not fire if the trace hits a friendly player
+	end
+
 	self:SetPoseParameter("aim_pitch",0)
 
 	ProtectedCall(function() 
-        self.NextFire = CurTime()+wep.Primary.Delay;
+        self.NextFire = CurTime() + wep.Primary.Delay + math.random( -wep.Primary.Delay / 10, wep.Primary.Delay / 10);
 		local snd = wep.Primary.Sound;
 		if type(snd) == "table" then
 			snd = table.Random( snd );
@@ -268,12 +334,12 @@ function ENT:WeaponPrimaryAttack()
         wep:EmitSound(snd, SNDLVL_GUNFIRE, 100, 1, CHAN_STATIC)
         self:RestartGesture(ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL)
         local bullet = {}
-        bullet.Num		= 1
+        bullet.Num		= wep.Primary.NumBullets
         bullet.Src		= wep:GetPos()+Vector(0,0,50)
         bullet.Dir		= self:GetEnemy():GetPos()-wep:GetPos()
         bullet.Spread	= Vector(wep.Primary.Accuracy * 300, wep.Primary.Accuracy * 300, 0)
         bullet.Tracer	= 1
-        bullet.Force	= 1
+        bullet.Force	= wep.Primary.Damage
         bullet.Damage	= wep.Primary.Damage
         bullet.AmmoType = "pistol"
 
@@ -285,6 +351,12 @@ end
 
 function ENT:Think()
 	if CLIENT then return end
+	local wep = self:GetActiveLuaWeapon()
+	
+	if wep.CurAmmo <= 0 then
+		self:Reload()
+		return
+	end
 
 	if self.NextSound < CurTime() then
 		self.NextSound = CurTime()+math.random(9,18)

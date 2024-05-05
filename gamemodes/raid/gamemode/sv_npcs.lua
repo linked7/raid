@@ -6,7 +6,7 @@ GM.EnemyTypes = {
 			["Price"] = 0.2,
 			["Reward"] = 10,
 			["Weapon"] = "weapon_raid_pistol",
-			["Health"] = 100,
+			["Health"] = 30,
 		},
 		["raidman_smg"] = {
 			["NPC"] = "raidman",
@@ -14,7 +14,7 @@ GM.EnemyTypes = {
 			["Price"] = 0.6,
 			["Reward"] = 10,
 			["Weapon"] = "weapon_raid_smg",
-			["Health"] = 100,
+			["Health"] = 40,
 		},
 		["raidman_shotgun"] = {
 			["NPC"] = "raidman",
@@ -22,7 +22,7 @@ GM.EnemyTypes = {
 			["Price"] = 0.8,
 			["Reward"] = 10,
 			["Weapon"] = "weapon_raid_shotgun",
-			["Health"] = 100,
+			["Health"] = 50,
 		},
 	},
 	--[[["CCA"] = {

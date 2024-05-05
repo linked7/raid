@@ -184,13 +184,13 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 				local npc = ents.Create( v["NPC"] );
 				npc:SetPos( spawn[2] );
 				npc:SetAngles( Angle( 0, math.random(0,359), 0 ) );
+				npc:SetHealth( v["Health"] or 50 )
+				npc:SetMaxHealth( v["Health"] or 50 )
 				npc:Spawn();
 				npc:Activate();
 
 				if( v["Weapon"] ) then
-
 					npc:Give( v["Weapon"] )
-
 				end
 
 				if( v["Rebel"] and v["Rebel"] == true ) then
