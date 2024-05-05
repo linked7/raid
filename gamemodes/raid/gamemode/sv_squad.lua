@@ -81,7 +81,7 @@ function GM:EndRaid()
 
 			if( v:Alive() ) then
 
-				self:GiveMoney( v, math.random( 5, 15 ) )
+				self:GiveMoney( v, 10 )
 
 			end
 
@@ -152,7 +152,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 		local anything = false
 
- 		if( v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
+		if( v and v["Price"] <= dangerLevel and dangerLevel - v["Price"] >= 0 ) then
 
 			if( upgradeNPCs == true ) then
 
@@ -177,8 +177,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 				anySpawned = true
 
 				local spawn = table.Random( unusedSpawns )
-
-				print( "spawnerror " .. tostring( spawn[2] ) )
+				--print( "spawning " .. tostring( spawn[2] ) )
 
 				table.RemoveByValue( unusedSpawns, spawn )
 
@@ -188,36 +187,19 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 				npc:Spawn();
 				npc:Activate();
 
+				if( v["Weapon"] ) then
+
+					npc:Give( v["Weapon"] )
+
+				end
+
 				if( v["Rebel"] and v["Rebel"] == true ) then
 
 					npc:SetModel( table.Random( self.RebelModels ) );
-					--[[npc:SetMaxHealth( npc:GetMaxHealth() * 1.5 )
-					npc:SetHealth( npc:Health() * 1.5 )--]]
 
 				end
-
-				--[[elseif( v["Elite"] and v["Elite"] == true ) then
-
-
-				elseif( v["Manhack"] and v["Manhack"] == true ) then
-
-					npc:SetKeyValue( Number of Manhacks, true )
-
-				end
-
-				if( v["NPC"] == "npc_combine_s" ) then
-
-					npc:SetKeyValue( NumGrenades, 1 )
-
-				end--]]
 
 				npc.Reward = v["Reward"]
-
-				for _, ply in pairs(player.GetAll()) do
-
---					npc:AddEntityRelationship( ply, D_HT, 99 ); -- must be disabled for custom npcs
-
-				end
 
 				table.insert( self.ActiveEnemies, npc )
 
@@ -256,13 +238,6 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 		end
 
-		print("creating " .. tostring( v["NPC"] ) )
-		if( v["Weapon"] ) then
-
-			print("weapon " .. v["Weapon"] )
-
-		end
-		print("danger transaction: " .. dangerLevel .. " - " .. v["Price"] )
 		print("bust: " .. bust )
 
 		if( anything == false ) then --protection from having too little danger to spawn anything
