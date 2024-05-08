@@ -24,7 +24,7 @@ SWEP.Primary.Damage			= 4
 SWEP.Primary.Sound			= "Weapon_Shotgun.Single"
 SWEP.Primary.Delay			= 0.7
 SWEP.Primary.NumBullets		= 6
-SWEP.Primary.Accuracy		= 0.05
+SWEP.Primary.Accuracy		= 0.1
 
 --[[---------------------------------------------------------
 	Name: SWEP:Initialize()
