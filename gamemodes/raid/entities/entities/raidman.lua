@@ -114,10 +114,16 @@ function ENT:RunBehaviour()
 			
 		else
 			self:StartActivity(ACT_HL2MP_WALK)
-			self:SetPoseParameter("aim_pitch",40)
+			self:SetPoseParameter("aim_pitch", 40)
 			self.loco:SetDesiredSpeed(50)
 			self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 100)
 			self:StartActivity(ACT_HL2MP_IDLE)
+			
+			while not self:FindEnemy() do 
+				print("found enemy DURING WALK")
+				coroutine.yield()
+				break
+			end
 		end
 		
 		coroutine.wait(2)
