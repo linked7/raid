@@ -93,7 +93,7 @@ end
 -- This is where the meat of our AI is
 ----------------------------------------------------
 function ENT:RunBehaviour()
-    local wep = self:GetActiveLuaWeapon()
+	local wep = self:GetActiveLuaWeapon()
 	while true do
 		
 		if( self:Health() < self:GetMaxHealth() / 2 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 2 ) then 
