@@ -131,6 +131,8 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 		for i = 1, v["Weight"] do
 
 			table.insert( weightedEnemies, v )
+			
+			--PrintTable(weightedEnemies)
 
 		end
 
@@ -139,7 +141,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 	local anySpawned = false
 	local upgradeNPCs = false
 
-	while( ( dangerLevel > 0 and bust < 6 ) or anySpawned == false ) do
+	while( ( dangerLevel > 0 and bust < 12 ) or anySpawned == false ) do
 
 		if( #unusedSpawns <= 0 ) then
 
