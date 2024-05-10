@@ -9,7 +9,24 @@ function ENT:SetupDataTables()
 end
 
 function ENT:Initialize()
-	self:SetModel(self.PlayerModel)
+	local modelsRebel = {
+		"models/player/group03m/male_01.mdl",
+		"models/player/group03m/male_02.mdl",
+		"models/player/group03m/male_03.mdl",
+		"models/player/group03m/male_04.mdl",
+		"models/player/group03m/male_05.mdl",
+		"models/player/group03m/male_06.mdl",
+		"models/player/group03m/male_07.mdl",
+		"models/player/group01/male_01.mdl",
+		"models/player/group01/male_02.mdl",
+		"models/player/group01/male_03.mdl",
+		"models/player/group01/male_04.mdl",
+		"models/player/group01/male_05.mdl",
+		"models/player/group01/male_06.mdl",
+		"models/player/group01/male_07.mdl",
+	}
+
+	self:SetModel(table.Random(modelsRebel))
 	
 	self.LoseTargetDist	= 1200
 	self.SearchRadius 	= 1800
@@ -110,6 +127,7 @@ function ENT:RunBehaviour()
 			local behaviours = { 
 				function() self:ChargeEnemy() end,
 				function() self:GoAwayFromEnemy() end,
+				function() self:GoRandomWhileShooting() end,
 			}
 			table.Random(behaviours)()
 			
@@ -139,6 +157,46 @@ function ENT:RunToRandomLocation()
 	return "ok"
 end
 
+function ENT:GoRandomWhileShooting()
+	local path = Path("Follow")
+	path:SetMinLookAheadDistance(0)
+	path:SetGoalTolerance(20)
+	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+    
+	if not path:IsValid() then return "failed" end
+	local timeout = CurTime() + math.random(2,3)
+
+	while path:IsValid() and self:HaveEnemy() and timeout > CurTime() do
+		if path:GetAge() > 0.1 then
+			local vec = vec or self:GetPos()
+			path:Compute(self, self:GetPos() + self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+			self:WeaponPrimaryAttack()
+			self.loco:FaceTowards(self:GetEnemy():GetPos())
+			if self.NextCrouch < CurTime() then
+				self.NextCrouch = CurTime() + 1
+				if math.random(1,10) == 2 then 
+					self:StartActivity(ACT_HL2MP_WALK_CROUCH_REVOLVER)
+					self.loco:SetDesiredSpeed(38)
+				else
+					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
+					self.loco:SetDesiredSpeed(85)
+				end
+			end
+        end
+		path:Update(self)
+		self.loco:FaceTowards(self:GetEnemy():GetPos())
+
+		if (self.loco:IsStuck()) then
+			self:HandleStuck()
+			return "stuck"
+		end
+
+		coroutine.yield()
+	end
+
+	return "ok"
+end
+
 function ENT:GoAwayFromEnemy()
 	print("running")
 	local path = Path("Follow")
@@ -147,7 +205,7 @@ function ENT:GoAwayFromEnemy()
 	path:Compute(self, self:GetEnemy():GetPos())
     
 	if not path:IsValid() then return "failed" end
-	local timeout = CurTime() + math.random(2,3)
+	local timeout = CurTime() + math.random(4,6)
 
 	while path:IsValid() and self:HaveEnemy() and timeout > CurTime() do
 		if path:GetAge() > 0.1 then
@@ -186,7 +244,7 @@ function ENT:ChargeEnemy()
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
 	path:Compute(self, self:GetEnemy():GetPos())
-    
+	
 	if not path:IsValid() then return "failed" end
 
 	local timeout = CurTime() + math.random(6,12)
@@ -194,8 +252,11 @@ function ENT:ChargeEnemy()
 	while path:IsValid() and self:HaveEnemy() do
 		if path:GetAge() > 0.1 then
 			local vec = vec or self:GetPos()
-			local vec = (self:GetPos() + self:GetEnemy():GetPos()):GetNormalized() * 100
-		--[[local newPos = self:GetPos() + vec
+			local vec = (self:GetEnemy():GetPos() - self:GetPos()):GetNormalized() * 100
+			
+			self:WeaponPrimaryAttack()
+			self.loco:FaceTowards(self:GetEnemy():GetPos())
+			local newPos = self:GetPos() + vec
 			local tr = util.TraceLine({
 				start = self:GetPos(),
 				endpos = newPos,
@@ -203,10 +264,8 @@ function ENT:ChargeEnemy()
 			})
 			if tr.Hit then
 				newPos = tr.HitPos + tr.HitNormal * 128
-			end--]]
-			path:Compute(self, self:GetPos() + vec)
-			self:WeaponPrimaryAttack()
-			self.loco:FaceTowards(self:GetEnemy():GetPos())
+			end
+			path:Compute(self, newPos)
 			if self.NextCrouch < CurTime() then
 				self.NextCrouch = CurTime() + 1
 				if math.random(1,8) == 2 then 
@@ -214,10 +273,10 @@ function ENT:ChargeEnemy()
 					self.loco:SetDesiredSpeed(70)
 				else
 					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
-					self.loco:SetDesiredSpeed(110)
+					self.loco:SetDesiredSpeed(100)
 				end
 			end
-        end
+		end
 		path:Update(self)
 		self.loco:FaceTowards(self:GetEnemy():GetPos())
 
@@ -392,6 +451,13 @@ function ENT:Think()
 		end
 		self.NextFootstep = CurTime()+0.6
 		self.Foot = !self.Foot
+	end
+end
+
+function ENT:Touch(ent)
+	print("TOUCHED")
+	if( ent:GetClass() == "func_breakable" or ent:GetClass() == "prop_physics" ) then
+		ent:TakeDamage( 1000, self )
 	end
 end
 
