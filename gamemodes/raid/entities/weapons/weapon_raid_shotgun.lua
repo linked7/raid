@@ -11,7 +11,7 @@ SWEP.ViewModelFOV	= 62
 SWEP.ViewModelFlip	= false
 SWEP.ViewModel		= "models/tnb/weapons/c_sawnoff.mdl"
 SWEP.WorldModel		= "models/tnb/weapons/w_sawnoff.mdl"
-SWEP.HoldType		= "pistol"
+SWEP.HoldType		= "shotgun"
 
 SWEP.Spawnable		= false
 SWEP.AdminOnly		= false
