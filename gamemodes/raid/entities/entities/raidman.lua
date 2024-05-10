@@ -106,11 +106,12 @@ function ENT:RunBehaviour()
 			self.loco:SetDesiredSpeed(50)
 			self.NextFire = CurTime()+1
 
-			if math.random(1,2) == 1 then
-				self:ChargeEnemy()
-			else
-				self:GoAwayFromEnemy()
-			end
+
+			local behaviours = { 
+				function() self:ChargeEnemy() end,
+				function() self:GoAwayFromEnemy() end,
+			}
+			table.Random(behaviours)()
 			
 		else
 			self:StartActivity(ACT_HL2MP_WALK)
