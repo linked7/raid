@@ -349,7 +349,7 @@ function ENT:WeaponPrimaryAttack()
 		if type(snd) == "table" then
 			snd = table.Random( snd );
 		end
-        wep:EmitSound(snd, SNDLVL_GUNFIRE, 100, 1, CHAN_STATIC)
+        self:EmitSound(snd, 75, 100, 5 )
         self:RestartGesture(ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL)
         local bullet = {}
         bullet.Num		= wep.Primary.NumBullets
