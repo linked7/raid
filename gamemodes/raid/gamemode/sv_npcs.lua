@@ -2,17 +2,17 @@ GM.EnemyTypes = {
 	["Custom"] = {
 		["raidman_pistol"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 1,
+			["Weight"] = 4,
 			["Price"] = 0.2,
-			["Reward"] = 10,
+			["Reward"] = 5,
 			["Weapon"] = "weapon_raid_pistol",
 			["Health"] = 30,
 		},
 		["raidman_smg"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 1,
+			["Weight"] = 2,
 			["Price"] = 0.6,
-			["Reward"] = 10,
+			["Reward"] = 8,
 			["Weapon"] = "weapon_raid_smg",
 			["Health"] = 40,
 		},
