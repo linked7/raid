@@ -62,7 +62,19 @@ function ENT:Initialize()
 
 	self.Healing = false
 	self.Foot = false
-	
+
+	if string.find(self:GetModel(), "female") then
+		self:SwapGender()
+	end
+
+end
+
+function ENT:SwapGender() -- swap all the voiceline's genders if the npc is using a female model
+	for key, value in pairs(self.Vo) do
+		for i, sound in ipairs(value) do
+			self.Vo[key][i] = string.gsub(sound, "male01", "female01")
+		end
+	end
 end
 
 
@@ -137,22 +149,21 @@ function ENT:RunBehaviour()
 	while true do
 		
 		if( self:Health() < self:GetMaxHealth() / 2 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 2 ) then 
-			self:RunToRandomLocation()
+			self:RunToRandomLocation() -- depending on how injured they are, run in panic
 		end
 		if self:HaveEnemy() then
 			
 			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
 			self:SetPoseParameter("aim_pitch",0)
 			self.loco:SetDesiredSpeed(50)
-			self.NextFire = CurTime()+1
+			self.NextFire = CurTime()+0.4
 
-
-			local behaviours = { 
+			local behaviours = { -- this functions as a switch statement substitue in lua
 				function() self:ChargeEnemy() end,
 				function() self:GoAwayFromEnemy() end,
 				function() self:GoRandomWhileShooting() end,
 			}
-			table.Random(behaviours)()
+			table.Random(behaviours)() -- choose a random behaviour
 			
 		else
 			self:StartActivity(ACT_HL2MP_WALK)
@@ -172,6 +183,7 @@ function ENT:RunBehaviour()
 end	
 
 function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not attack during this
+	self:EmitSound(table.Random(self.Vo.Panic), 75, math.random(95,105), 1, CHAN_VOICE)
 	self:StartActivity(ACT_HL2MP_RUN_PANICKED)
 	self.loco:SetDesiredSpeed(200)
 	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
@@ -180,6 +192,7 @@ function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not
 end
 
 function ENT:GoRandomWhileShooting() -- go to a random location while shooting at the enemy
+	self:EmitSound(table.Random(self.Vo.BehaviourFar), 75, math.random(95,105), 1, CHAN_VOICE)
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -220,6 +233,7 @@ function ENT:GoRandomWhileShooting() -- go to a random location while shooting a
 end
 
 function ENT:GoAwayFromEnemy() -- go far away from the enemy while shooting at them
+	self:EmitSound(table.Random(self.Vo.BehaviourFar), 75, math.random(95,105), 1, CHAN_VOICE)
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -261,6 +275,7 @@ function ENT:GoAwayFromEnemy() -- go far away from the enemy while shooting at t
 end
 
 function ENT:ChargeEnemy() -- charge to the enemy while shooting them. they will stand still and shoot the enemy while close to them
+	self:EmitSound(table.Random(self.Vo.BehaviourCharge), 75, math.random(95,105), 1, CHAN_VOICE)
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -355,6 +370,7 @@ function ENT:FindEnemy()
 			-- We found one so lets set it as our enemy and return true
 			if self:Visible(v) then
 				self:SetEnemy(v)
+				self:EmitSound(table.Random(self.Vo.EnemySpotted), 75, math.random(95,105), 1, CHAN_VOICE)
 				return true
 			end
 			--self:PlaySequenceAndWait("ACT_SIGNAL_HALT")
@@ -369,16 +385,15 @@ function ENT:OnInjured(info)
 	if( info:GetAttacker():IsPlayer() ) then
 		self.Enemy = info:GetAttacker()
 	end
-	--self:FindEnemy()
 	self.NextFire = CurTime()+0.1
-	self:EmitSound("placenta/pain/prole5.wav")
+	self:EmitSound(table.Random(self.Vo.Pain), 75, math.random(95,105), 1, CHAN_VOICE)
 end
 
 function ENT:OnKilled(dmginfo)
-	self:EmitSound("placenta/pain/prole" .. math.random(2,4) .. ".wav")
+	self:EmitSound(table.Random(self.Vo.Die), 75, math.random(95,105), 1, CHAN_VOICE)
 	local rag = self:BecomeRagdoll(dmginfo)
 	hook.Call("OnNPCKilled", GAMEMODE, self, dmginfo:GetAttacker(), dmginfo:GetInflictor())
-	SafeRemoveEntityDelayed(self, 0.05)
+	SafeRemoveEntityDelayed(self, 0.01)
 end
 
 function ENT:Reload()
@@ -386,6 +401,7 @@ function ENT:Reload()
 	if wep.Reloading then return end
 	self:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_REVOLVER)
 	wep.Reloading = true
+	self:EmitSound(table.Random(self.Vo.Reload), 75, math.random(95,105), 1, CHAN_VOICE)
 	timer.Simple(2.5, function()
 		if self:IsValid() and wep:IsValid() then
 			wep.CurAmmo = wep.MaxClip
@@ -455,9 +471,9 @@ function ENT:Think()
 		return
 	end
 
-	if self.NextSound < CurTime() then
-		self.NextSound = CurTime()+math.random(9,18)
-		self:EmitSound("placenta/speech/prisoner" .. math.random(1,4) .. ".wav")
+	if self.NextSound < CurTime() and !self.Enemy then
+		self.NextSound = CurTime()+math.random(4,5)
+		self:EmitSound(table.Random(self.Vo.Idle), 75, math.random(95,105), 1, CHAN_VOICE)
 	end
 
 	local speed = (self.loco:GetVelocity().x + self.loco:GetVelocity().y)%1
@@ -479,6 +495,67 @@ end
 		ent:TakeDamage( 1000, self )
 	end
 end--]]
+
+ENT.Vo = {}
+ENT.Vo.EnemySpotted = {"vo/npc/male01/overthere01.wav", "vo/npc/male01/overthere02.wav", "vo/npc/male01/watchout.wav", "vo/npc/male01/ohno.wav", "vo/npc/male01/headsup01.wav", "vo/npc/male01/headsup02.wav", "vo/npc/male01/heretheycome01.wav"}
+ENT.Vo.Reload = {"vo/npc/male01/coverwhilereload01.wav", "vo/npc/male01/coverwhilereload02.wav"}
+ENT.Vo.Die = {"vo/npc/male01/no01.wav", "vo/npc/male01/no02.wav"}
+ENT.Vo.Pain = {
+	"vo/npc/male01/hitingut02.wav",
+	"vo/npc/male01/hitingut02.wav",
+	"vo/npc/male01/hitingut02.wav",
+	"vo/npc/male01/hitingut01.wav",
+	"vo/npc/male01/myarm02.wav",
+	"vo/npc/male01/myarm01.wav",
+	"vo/npc/male01/myleg01.wav",
+	"vo/npc/male01/myleg02.wav",
+	"vo/npc/male01/pain01.wav",
+	"vo/npc/male01/pain02.wav",
+	"vo/npc/male01/pain03.wav",
+	"vo/npc/male01/pain04.wav",
+	"vo/npc/male01/pain05.wav",
+	"vo/npc/male01/pain06.wav",
+	"vo/npc/male01/pain07.wav",
+	"vo/npc/male01/pain08.wav",
+	"vo/npc/male01/pain09.wav",
+}
+ENT.Vo.Footstep = {}
+ENT.Vo.Panic = { "vo/npc/male01/help01.wav", "vo/npc/male01/runforyourlife021.wav", "vo/npc/male01/runforyourlife02.wav", "vo/npc/male01/runforyourlife03.wav" }
+ENT.Vo.BehaviourFar = { "vo/npc/male01/holddownspot01.wav", "vo/npc/male01/illstayhere01.wav", "vo/npc/male01/holddownspot02.wav"}
+ENT.Vo.BehaviourCharge = { "vo/npc/male01/letsgo01.wav", "vo/npc/male01/letsgo02.wav", "vo/npc/male01/leadtheway01.wav", "vo/npc/male01/leadtheway02.wav"}
+ENT.Vo.Idle = {
+	"vo/npc/male01/question01.wav",
+	"vo/npc/male01/question02.wav",
+	"vo/npc/male01/question03.wav",
+	"vo/npc/male01/question04.wav",
+	"vo/npc/male01/question05.wav",
+	"vo/npc/male01/question06.wav",
+	"vo/npc/male01/question07.wav",
+	"vo/npc/male01/question08.wav",
+	"vo/npc/male01/question09.wav",
+	"vo/npc/male01/question10.wav",
+	"vo/npc/male01/question11.wav",
+	"vo/npc/male01/question12.wav",
+	"vo/npc/male01/question13.wav",
+	"vo/npc/male01/question14.wav",
+	"vo/npc/male01/question15.wav",
+	"vo/npc/male01/question16.wav",
+	"vo/npc/male01/question17.wav",
+	"vo/npc/male01/question18.wav",
+	"vo/npc/male01/question19.wav",
+	"vo/npc/male01/question20.wav",
+	"vo/npc/male01/question21.wav",
+	"vo/npc/male01/question22.wav",
+	"vo/npc/male01/question23.wav",
+	"vo/npc/male01/question24.wav",
+	"vo/npc/male01/question25.wav",
+	"vo/npc/male01/question26.wav",
+	"vo/npc/male01/question27.wav",
+	"vo/npc/male01/question28.wav",
+	"vo/npc/male01/question29.wav",
+	"vo/npc/male01/question30.wav",
+	"vo/npc/male01/question31.wav"
+}
 
 list.Set("NPC", "raidman", {
 	Name = "Raid Enemy",
