@@ -175,7 +175,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 				npc.Reward = npc.Reward * 2
 
 				dangerLevel = dangerLevel - 0.5
-				bust = bust + 1
+				--bust = bust + 1
 
 				print( "Upgrading NPC " .. npc:GetClass() )
 
@@ -246,7 +246,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 		end
 
-		print("bust: " .. bust )
+		--print("bust: " .. bust )
 
 		if( anything == false ) then --protection from having too little danger to spawn anything
 
