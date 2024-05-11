@@ -73,7 +73,7 @@ end
 
 function GM:EndRaid()
 
-	RunConsoleCommand( "gmod_admin_cleanup" )
+	RunConsoleCommand( "gmod_admin_cleanup" ) -- reset the map
 
 	self.ActiveEnemies = {};
 
@@ -109,13 +109,13 @@ end
 
 function GM:RaidPlayers( location )
 
-	arena_tabl = self.ArenaSpawns[location]
+	arena_table = self.ArenaSpawns[location] -- specifies which arena is active
 
 	for k, v in pairs( player.GetAll() ) do
 
 		v:EmitSound("ambient/machines/teleport1.wav", 60)
 
-		v:SetPos( table.Random( arena_tabl ) )
+		v:SetPos( table.Random( arena_table ) )
 
 		table.insert( self.ActiveRaiders, v )
 
@@ -123,7 +123,7 @@ function GM:RaidPlayers( location )
 
 end
 
-function GM:PopulateLocation( location, dangerLevel, enemyType )
+function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npcs
 
 	local unusedSpawns = table.Copy( self.EnemySpawns[location] )
 
@@ -151,7 +151,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 		if( #unusedSpawns <= 0 ) then
 
 			print( "PopulateLocation ran out of spawn points!")
-			upgradeNPCs = true
+			upgradeNPCs = true -- no spawn points, let's upgrade existing npcs
 
 		end
 
@@ -165,13 +165,13 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 				local npc = table.Random( self.ActiveEnemies )
 
-				npc:SetMaxHealth( npc:GetMaxHealth() * 2 )
+				npc:SetMaxHealth( npc:GetMaxHealth() * 2 ) -- double their health
 				npc:SetHealth( npc:Health() * 2 )
 
-				npc:SetColor( Color( 200, 50, 200, 255) )
+				npc:SetColor( Color( 200, 50, 200, 255) ) -- give them a distinct color
 				npc:SetRenderMode( RENDERMODE_TRANSCOLOR )
 
-				npc.Reward = npc.Reward * 2
+				npc.Reward = npc.Reward * 2 -- double the reward
 
 				dangerLevel = dangerLevel - 0.5
 				--bust = bust + 1
@@ -190,7 +190,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 
 				local npc = ents.Create( v["NPC"] );
 				npc:SetPos( spawn[2] );
-				npc:SetAngles( Angle( 0, math.random(0,359), 0 ) );
+				npc:SetAngles( Angle( 0, math.random(0,359), 0 ) ); -- face a random direction
 				npc:SetHealth( v["Health"] or 50 )
 				npc:SetMaxHealth( v["Health"] or 50 )
 				npc:Spawn();
