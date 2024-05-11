@@ -65,7 +65,7 @@ function ENT:Use( ply )
 
 		self:EmitSound("buttons/button9.wav", 75, math.random(90, 110));
 
-		timer.Simple(5, function()
+		timer.Simple(1, function()
 
 			if( self.Starting ) then
 
