@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Base 			= "base_nextbot"
 ENT.Spawnable		= true
-ENT.PlayerModel		= "models/player/group03m/male_07.mdl";
+ENT.PlayerModel		= "models/player/group01/male_07.mdl";
 
 function ENT:SetupDataTables()
 	self:NetworkVar( "Entity", 0, "ActiveWeapon" )
@@ -10,24 +10,48 @@ end
 
 function ENT:Initialize()
 	local modelsRebel = {
-		"models/player/group03m/male_01.mdl",
-		"models/player/group03m/male_02.mdl",
-		"models/player/group03m/male_03.mdl",
-		"models/player/group03m/male_04.mdl",
-		"models/player/group03m/male_05.mdl",
-		"models/player/group03m/male_06.mdl",
-		"models/player/group03m/male_07.mdl",
-		"models/player/group01/male_01.mdl",
-		"models/player/group01/male_02.mdl",
-		"models/player/group01/male_03.mdl",
-		"models/player/group01/male_04.mdl",
-		"models/player/group01/male_05.mdl",
-		"models/player/group01/male_06.mdl",
-		"models/player/group01/male_07.mdl",
+		"models/player/Group03/male_01.mdl",
+		"models/player/Group03/male_02.mdl",
+		"models/player/Group03/male_03.mdl",
+		"models/player/Group03/male_04.mdl",
+		"models/player/Group03/male_05.mdl",
+		"models/player/Group03/male_06.mdl",
+		"models/player/Group03/male_07.mdl",
+		"models/player/Group03/male_08.mdl",
+		"models/player/Group03/male_09.mdl",
+		"models/player/Group03/female_01.mdl",
+		"models/player/Group03/female_02.mdl",
+		"models/player/Group03/female_03.mdl",
+		"models/player/Group03/female_04.mdl",
+		"models/player/Group03/female_05.mdl",
+		"models/player/Group03/female_06.mdl",
+		"models/player/Group03m/male_01.mdl",
+		"models/player/Group03m/male_02.mdl",
+		"models/player/Group03m/male_03.mdl",
+		"models/player/Group03m/male_04.mdl",
+		"models/player/Group03m/male_05.mdl",
+		"models/player/Group03m/male_06.mdl",
+		"models/player/Group03m/male_07.mdl",
+		"models/player/Group03m/male_08.mdl",
+		"models/player/Group03m/male_09.mdl",
+		"models/player/Group03m/female_01.mdl",
+		"models/player/Group03m/female_02.mdl",
+		"models/player/Group03m/female_03.mdl",
+		"models/player/Group03m/female_04.mdl",
+		"models/player/Group03m/female_05.mdl",
+		"models/player/Group03m/female_06.mdl"
 	}
 
-	self:SetModel(table.Random(modelsRebel))
-	
+	if( SERVER ) then
+		local model = table.Random( modelsRebel )
+
+		if( not util.IsValidModel( model ) ) then
+			print( "INVALID MODEL: " .. model)
+			model = "models/player/Group03/male_07.mdl"
+		end
+		self:SetModel( model ) 
+
+	end 
 	self.LoseTargetDist	= 1200
 	self.SearchRadius 	= 1800
 
