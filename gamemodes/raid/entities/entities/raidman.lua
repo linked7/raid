@@ -156,7 +156,7 @@ function ENT:RunBehaviour()
 			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
 			self:SetPoseParameter("aim_pitch",0)
 			self.loco:SetDesiredSpeed(50)
-			self.NextFire = CurTime()+0.4
+			self.NextFire = CurTime()+1
 
 			local behaviours = { -- this functions as a switch statement substitue in lua
 				function() self:ChargeEnemy() end,
@@ -407,7 +407,7 @@ function ENT:OnInjured(info)
 	if( info:GetAttacker():IsPlayer() ) then
 		self.Enemy = info:GetAttacker()
 	end
-	self.NextFire = CurTime()+0.1
+	self.NextFire = CurTime()+0.4
 	self:EmitSound(table.Random(self.Vo.Pain), 75, math.random(95,105), 1, CHAN_VOICE)
 end
 
