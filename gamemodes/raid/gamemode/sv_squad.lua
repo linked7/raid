@@ -101,6 +101,8 @@ function GM:EndRaid()
 				net.WriteUInt( self.SquadState, 4 )
 			net.Broadcast();
 
+			self.Ending = false
+
 		end
 
 	end)
