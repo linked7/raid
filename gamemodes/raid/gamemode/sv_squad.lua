@@ -128,7 +128,6 @@ function GM:PopulateLocation( location, dangerLevel, enemyType )
 	local unusedSpawns = table.Copy( self.EnemySpawns[location] )
 
 	local bust = 0
-	local debt = 0
 
 	local weightedEnemies = {};
 
