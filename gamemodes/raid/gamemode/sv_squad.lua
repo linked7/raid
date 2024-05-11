@@ -35,6 +35,10 @@ function GM:StartRaid()
 		net.WriteFloat( dangerLevel )
 	net.Broadcast();
 
+	for i, ply in ipairs( player.GetAll() ) do
+		ply:ChatPrint( "Raid started!" )
+	end
+
 end
 
 function GM:GetDanger()
@@ -84,6 +88,8 @@ function GM:EndRaid()
 				self:GiveMoney( v, 10 )
 
 			end
+
+			v:ChatPrint( "Raid ended!" )
 
 			self.SquadState = STATE_IDLE
 			self.ForceRaidEnd = 0
