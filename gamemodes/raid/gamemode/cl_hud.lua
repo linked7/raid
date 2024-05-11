@@ -40,7 +40,7 @@ function GM:HUDPaint()
 
 	end
 
-	local y = 50
+	local y = 200
 
 	draw.SimpleTextOutlined( "£" .. money, "ChatFont", ScrW() - 25, ScrH() - y, Color( 200, 200, 0, 200 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color( 0, 0, 0, 255 ) );
 	y = y + 20
