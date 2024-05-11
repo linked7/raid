@@ -46,13 +46,13 @@ function ENT:Initialize()
 		local model = table.Random( modelsRebel )
 
 		if( not util.IsValidModel( model ) ) then
-			print( "INVALID MODEL: " .. model)
+			print( "ERROR! INVALID MODEL: " .. model)
 			model = "models/player/Group03/male_07.mdl"
 		end
 		self:SetModel( model ) 
 
 	end 
-	self.LoseTargetDist	= 1200
+	self.LoseTargetDist	= 1200 -- these are largely obsolute for the size of the arenas, but will be kept for furture compatibility
 	self.SearchRadius 	= 1800
 
 	self.NextFire = CurTime()
@@ -109,7 +109,6 @@ function ENT:SetupWeapon(wep)
 	wep:SetTransmitWithParent(true)
 	wep.CurAmmo = wep.Primary.ClipSize
 	wep.MaxClip = wep.Primary.ClipSize
-	print(" WEAPON SET UP")
 	wep.Reloading = false
 	return actwep
 end
@@ -163,7 +162,6 @@ function ENT:RunBehaviour()
 			self:StartActivity(ACT_HL2MP_IDLE)
 			
 			while not self:FindEnemy() do 
-				print("found enemy DURING WALK")
 				coroutine.yield()
 				break
 			end
@@ -173,7 +171,7 @@ function ENT:RunBehaviour()
 	end
 end	
 
-function ENT:RunToRandomLocation()
+function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not attack during this
 	self:StartActivity(ACT_HL2MP_RUN_PANICKED)
 	self.loco:SetDesiredSpeed(200)
 	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
@@ -181,7 +179,7 @@ function ENT:RunToRandomLocation()
 	return "ok"
 end
 
-function ENT:GoRandomWhileShooting()
+function ENT:GoRandomWhileShooting() -- go to a random location while shooting at the enemy
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -221,8 +219,7 @@ function ENT:GoRandomWhileShooting()
 	return "ok"
 end
 
-function ENT:GoAwayFromEnemy()
-	print("running")
+function ENT:GoAwayFromEnemy() -- go far away from the enemy while shooting at them
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -263,7 +260,7 @@ function ENT:GoAwayFromEnemy()
 	return "ok"
 end
 
-function ENT:ChargeEnemy()
+function ENT:ChargeEnemy() -- charge to the enemy while shooting them. they will stand still and shoot the enemy while close to them
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
@@ -391,7 +388,6 @@ function ENT:Reload()
 	wep.Reloading = true
 	timer.Simple(2.5, function()
 		if self:IsValid() and wep:IsValid() then
-			print("finished reloading")
 			wep.CurAmmo = wep.MaxClip
 			wep.Reloading = false
 		end
@@ -421,8 +417,7 @@ function ENT:WeaponPrimaryAttack()
 	trace.filter = self -- Exclude self from the trace
 	local tr = util.TraceLine(trace)
 	if( IsValid(tr.Entity) and tr.Entity:GetClass() == self:GetClass() ) then
-		print("HOLDING FIRE")
-		return -- Do not fire if the trace hits a friendly player
+		return -- Do not fire if the trace hits a friendly entity
 	end
 
 	self:SetPoseParameter("aim_pitch",0)
@@ -478,12 +473,12 @@ function ENT:Think()
 	end
 end
 
-function ENT:Touch(ent)
+--[[function ENT:Touch(ent) -- this function doesn't work with nextbots, this was an attempt to prevent the NPC from getting stuck on objects
 	print("TOUCHED")
 	if( ent:GetClass() == "func_breakable" or ent:GetClass() == "prop_physics" ) then
 		ent:TakeDamage( 1000, self )
 	end
-end
+end--]]
 
 list.Set("NPC", "raidman", {
 	Name = "Raid Enemy",
