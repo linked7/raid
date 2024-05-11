@@ -32,6 +32,6 @@ SWEP.Primary.Accuracy		= 0.1
 -----------------------------------------------------------]]
 function SWEP:Initialize()
 
-	self:SetHoldType( "pistol" )
+	self:SetHoldType( self.HoldType )
 
 end

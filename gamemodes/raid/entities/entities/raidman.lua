@@ -213,7 +213,7 @@ function ENT:GoRandomWhileShooting() -- go to a random location while shooting a
 					self:StartActivity(ACT_HL2MP_WALK_CROUCH_REVOLVER)
 					self.loco:SetDesiredSpeed(38)
 				else
-					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
+					self:StartActivity(self:GetAimAnim())
 					self.loco:SetDesiredSpeed(85)
 				end
 			end
@@ -255,7 +255,7 @@ function ENT:GoAwayFromEnemy() -- go far away from the enemy while shooting at t
 					self:StartActivity(ACT_HL2MP_WALK_CROUCH_REVOLVER)
 					self.loco:SetDesiredSpeed(38)
 				else
-					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
+					self:StartActivity(self:GetAimAnim())
 					self.loco:SetDesiredSpeed(90)
 				end
 			end
@@ -308,7 +308,7 @@ function ENT:ChargeEnemy() -- charge to the enemy while shooting them. they will
 					self:StartActivity(ACT_HL2MP_WALK_CROUCH_REVOLVER)
 					self.loco:SetDesiredSpeed(70)
 				else
-					self:StartActivity(ACT_HL2MP_WALK_REVOLVER)
+					self:StartActivity(self:GetAimAnim())
 					self.loco:SetDesiredSpeed(100)
 				end
 			end
@@ -325,6 +325,28 @@ function ENT:ChargeEnemy() -- charge to the enemy while shooting them. they will
 	end
 
 	return "ok"
+end
+
+function ENT:GetAimAnim()
+
+	local wep = self:GetActiveLuaWeapon()
+	if ( !IsValid( wep ) ) then return end
+
+	local act = wep:GetActivity()
+
+	local translations = {
+		["pistol"] = ACT_HL2MP_WALK_REVOLVER,
+		["smg"] = ACT_HL2MP_WALK_SMG1,
+		["ar2"] = ACT_HL2MP_WALK_AR2,
+		["shotgun"] = ACT_HL2MP_WALK_SHOTGUN,
+		["crossbow"] = ACT_HL2MP_WALK_CROSSBOW,
+		["rpg"] = ACT_HL2MP_WALK_RPG,
+		["grenade"] = ACT_HL2MP_WALK_GRENADE,
+	}
+
+	local anim = translations[wep:GetHoldType()] or ACT_HL2MP_WALK_REVOLVER
+	return anim
+
 end
 
 ----------------------------------------------------

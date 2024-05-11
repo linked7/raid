@@ -24,7 +24,7 @@ SWEP.Primary.Damage			= 5
 SWEP.Primary.Sound			= "tekka/weapons/weapon_m4.wav"
 SWEP.Primary.Delay			= 0.075
 SWEP.Primary.NumBullets		= 1
-SWEP.Primary.Accuracy		= 0.06
+SWEP.Primary.Accuracy		= 0.1
 
 --[[---------------------------------------------------------
 	Name: SWEP:Initialize()
@@ -32,6 +32,6 @@ SWEP.Primary.Accuracy		= 0.06
 -----------------------------------------------------------]]
 function SWEP:Initialize()
 
-	self:SetHoldType( "shotgun" )
+	self:SetHoldType( self.HoldType )
 
 end
