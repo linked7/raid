@@ -65,8 +65,6 @@ function GM:GetDanger()
 
 	end
 
-	print("DANGER IS: " .. danger)
-
 	return danger
 
 end
