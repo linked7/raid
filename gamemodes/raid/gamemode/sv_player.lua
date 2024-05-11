@@ -75,7 +75,7 @@ function GM:OnNPCKilled( npc, attacker, inf )
 
 			attacker:EmitSound( "buttons/button1.wav", 90 )
 
-			timer.Simple( 3, function() self:EndRaid() end )
+			timer.Simple( 1, function() self:EndRaid() end )
 
 		end
 
