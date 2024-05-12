@@ -66,7 +66,7 @@ SWEP:SetWeaponHoldType( "pistol" )
 --[[---------------------------------------------------------
 	Name: weapon:TranslateActivity()
 	Desc: Translate a player's Activity into a weapon's activity
-		 	So for example, ACT_HL2MP_RUN becomes ACT_HL2MP_RUN_PISTOL
+		So for example, ACT_HL2MP_RUN becomes ACT_HL2MP_RUN_PISTOL
 			Depending on how you want the player to be holding the weapon
 -----------------------------------------------------------]]
 function SWEP:TranslateActivity( act )

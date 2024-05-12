@@ -63,11 +63,16 @@ function ENT:Initialize()
 	self.Healing = false
 	self.Foot = false
 
+	self.Idle = IDLETYPE_IDLE
 	if string.find(self:GetModel(), "female") then
 		self:SwapGender()
 	end
 
 end
+
+IDLETYPE_IDLE = 	1
+IDLETYPE_INTERUPT = 2
+IDLETYPE_ACTIVE = 	3
 
 function ENT:SwapGender() -- swap all the voiceline's genders if the npc is using a female model
 	for key, value in pairs(self.Vo) do
@@ -148,7 +153,7 @@ function ENT:RunBehaviour()
 	local wep = self:GetActiveLuaWeapon()
 	while true do
 		
-		if( self:Health() < self:GetMaxHealth() / 2 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 2 ) then 
+		if( self:Health() < self:GetMaxHealth() / 1.5 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 1.5 ) then 
 			self:RunToRandomLocation() -- depending on how injured they are, run in panic
 		end
 		if self:HaveEnemy() then
@@ -164,15 +169,14 @@ function ENT:RunBehaviour()
 				function() self:GoRandomWhileShooting() end,
 			}
 			table.Random(behaviours)() -- choose a random behaviour
-			
 		else
 			self:StartActivity(ACT_HL2MP_WALK)
 			self:SetPoseParameter("aim_pitch", 40)
 			self.loco:SetDesiredSpeed(50)
 			self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 100)
 			self:StartActivity(ACT_HL2MP_IDLE)
-			
-			while not self:FindEnemy() do 
+			if self.Idle == IDLETYPE_INTERUPT then
+				self.Idle = IDLETYPE_ACTIVE
 				coroutine.yield()
 				break
 			end
@@ -491,6 +495,10 @@ function ENT:Think()
 	if wep.CurAmmo <= 0 then
 		self:Reload()
 		return
+	end
+
+	if( self.Idle == IDLETYPE_IDLE and self:HaveEnemy() ) then
+		self.Idle = IDLETYPE_INTERUPT
 	end
 
 	if self.NextSound < CurTime() and !self.Enemy then
