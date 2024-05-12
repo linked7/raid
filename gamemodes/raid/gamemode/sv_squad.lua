@@ -193,6 +193,9 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				npc:SetAngles( Angle( 0, math.random(0,359), 0 ) ); -- face a random direction
 				npc:SetHealth( v["Health"] or 50 )
 				npc:SetMaxHealth( v["Health"] or 50 )
+				if( v["Medic"] ) then
+					npc.Medic = true
+				end
 				npc:Spawn();
 				npc:Activate();
 
@@ -200,11 +203,11 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 					npc:Give( v["Weapon"] )
 				end
 
-				if( v["Rebel"] and v["Rebel"] == true ) then
+			--[[if( v["Rebel"] and v["Rebel"] == true ) then
 
 					npc:SetModel( table.Random( self.RebelModels ) );
 
-				end
+				end--]]
 
 				npc.Reward = v["Reward"]
 

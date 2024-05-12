@@ -8,47 +8,58 @@ function ENT:SetupDataTables()
 	self:NetworkVar( "Entity", 0, "ActiveWeapon" )
 end
 
-function ENT:Initialize()
-	local modelsRebel = {
-		"models/player/Group03/male_01.mdl",
-		"models/player/Group03/male_02.mdl",
-		"models/player/Group03/male_03.mdl",
-		"models/player/Group03/male_04.mdl",
-		"models/player/Group03/male_05.mdl",
-		"models/player/Group03/male_06.mdl",
-		"models/player/Group03/male_07.mdl",
-		"models/player/Group03/male_08.mdl",
-		"models/player/Group03/male_09.mdl",
-		"models/player/Group03/female_01.mdl",
-		"models/player/Group03/female_02.mdl",
-		"models/player/Group03/female_03.mdl",
-		"models/player/Group03/female_04.mdl",
-		"models/player/Group03/female_05.mdl",
-		"models/player/Group03/female_06.mdl",
-		"models/player/Group03m/male_01.mdl",
-		"models/player/Group03m/male_02.mdl",
-		"models/player/Group03m/male_03.mdl",
-		"models/player/Group03m/male_04.mdl",
-		"models/player/Group03m/male_05.mdl",
-		"models/player/Group03m/male_06.mdl",
-		"models/player/Group03m/male_07.mdl",
-		"models/player/Group03m/male_08.mdl",
-		"models/player/Group03m/male_09.mdl",
-		"models/player/Group03m/female_01.mdl",
-		"models/player/Group03m/female_02.mdl",
-		"models/player/Group03m/female_03.mdl",
-		"models/player/Group03m/female_04.mdl",
-		"models/player/Group03m/female_05.mdl",
-		"models/player/Group03m/female_06.mdl"
-	}
+ENT.RebelModels = {
+	"models/player/Group03/male_01.mdl",
+	"models/player/Group03/male_02.mdl",
+	"models/player/Group03/male_03.mdl",
+	"models/player/Group03/male_04.mdl",
+	"models/player/Group03/male_05.mdl",
+	"models/player/Group03/male_06.mdl",
+	"models/player/Group03/male_07.mdl",
+	"models/player/Group03/male_08.mdl",
+	"models/player/Group03/male_09.mdl",
+	"models/player/Group03/female_01.mdl",
+	"models/player/Group03/female_02.mdl",
+	"models/player/Group03/female_03.mdl",
+	"models/player/Group03/female_04.mdl",
+	"models/player/Group03/female_05.mdl",
+	"models/player/Group03/female_06.mdl",
+}
 
+ENT.MedicModels = {
+	"models/player/Group03m/male_01.mdl",
+	"models/player/Group03m/male_02.mdl",
+	"models/player/Group03m/male_03.mdl",
+	"models/player/Group03m/male_04.mdl",
+	"models/player/Group03m/male_05.mdl",
+	"models/player/Group03m/male_06.mdl",
+	"models/player/Group03m/male_07.mdl",
+	"models/player/Group03m/male_08.mdl",
+	"models/player/Group03m/male_09.mdl",
+	"models/player/Group03m/female_01.mdl",
+	"models/player/Group03m/female_02.mdl",
+	"models/player/Group03m/female_03.mdl",
+	"models/player/Group03m/female_04.mdl",
+	"models/player/Group03m/female_05.mdl",
+	"models/player/Group03m/female_06.mdl"
+}
+
+function ENT:Initialize()
 	if( SERVER ) then
-		local model = table.Random( modelsRebel )
+		local models = self.RebelModels
+
+		if( self.Medic ) then
+			print("I'm a medic!") 
+			models = self.MedicModels
+		end
+
+		local model = table.Random( models )
 
 		if( not util.IsValidModel( model ) ) then
 			print( "ERROR! INVALID MODEL: " .. model)
 			model = "models/player/Group03/male_07.mdl"
 		end
+
 		self:SetModel( model ) 
 
 	end 
@@ -156,6 +167,9 @@ function ENT:RunBehaviour()
 		if( self:Health() < self:GetMaxHealth() / 1.5 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 1.5 ) then 
 			self:RunToRandomLocation() -- depending on how injured they are, run in panic
 		end
+		if( self.Medic and math.random(1,10) > 1 ) then
+			self:HealAlly()
+		end
 		if self:HaveEnemy() then
 			
 			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
@@ -169,22 +183,26 @@ function ENT:RunBehaviour()
 				function() self:GoRandomWhileShooting() end,
 			}
 			table.Random(behaviours)() -- choose a random behaviour
+
 		else
+
 			self:StartActivity(ACT_HL2MP_WALK)
 			self:SetPoseParameter("aim_pitch", 40)
 			self.loco:SetDesiredSpeed(50)
 			self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 100)
 			self:StartActivity(ACT_HL2MP_IDLE)
+
 			if self.Idle == IDLETYPE_INTERUPT then
-				self.Idle = IDLETYPE_ACTIVE
+				self.Idle = IDLETYPE_ACTIVE 
 				coroutine.yield()
 				break
 			end
+
 		end
 		
 		coroutine.wait(2)
 	end
-end	
+end
 
 function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not attack during this
 	self:EmitSound(table.Random(self.Vo.Panic), 75, math.random(95,105), 1, CHAN_VOICE)
@@ -195,6 +213,63 @@ function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not
 	return "ok"
 end
 
+function ENT:HealAlly()
+
+	local patient
+	for k, v in pairs( ents.FindInSphere(self:GetPos(), 840) ) do
+		if( v != self and v:GetClass() == self:GetClass() and v:Health() < v:GetMaxHealth() ) then -- find a nearby ally that is injured
+			patient = v
+			break
+		end
+	end
+
+	if( patient and patient:IsValid() ) then
+
+		while path:IsValid() and self:HaveEnemy() and timeout > CurTime() and timeout > CurTime() do
+
+			self.Healing = true
+			self:StartActivity(ACT_RUN_STEALTH)
+			self.loco:SetDesiredSpeed(100)
+
+			local path = Path("Follow")
+			path:SetMinLookAheadDistance(0)
+			path:SetGoalTolerance(20)
+			path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+
+			if path:GetAge() > 0.1 then
+				local vec = vec or self:GetPos()
+				local vec = (patient:GetPos() - self:GetPos()):GetNormalized() * 100
+				
+				self.loco:FaceTowards(patient:GetPos())
+				local newPos = self:GetPos() + vec
+				local tr = util.TraceLine({
+					start = self:GetPos(),
+					endpos = newPos,
+					filter = self
+				})
+				if tr.Hit and tr.HitPos:Distance(self:GetPos()) < 128 then
+					newPos = tr.HitPos + tr.HitNormal * 128
+					self:EmitSound(table.Randon(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE)
+					self:PlaySequenceAndWait(ACT_GMOD_GESTURE_ITEM_GIVE)
+					patient:SetHealth(patient:GetMaxHealth())
+					break
+				end
+			end
+
+		end
+
+		coroutine.yield()
+
+	end
+
+	timer.Simple(2.5, function()
+		if self:IsValid() then
+			self:Heal()
+			self.Healing = false
+		end
+	end)
+end
+
 function ENT:GoRandomWhileShooting() -- go to a random location while shooting at the enemy
 	self:EmitSound(table.Random(self.Vo.BehaviourFar), 75, math.random(95,105), 1, CHAN_VOICE)
 	local path = Path("Follow")
@@ -203,7 +278,7 @@ function ENT:GoRandomWhileShooting() -- go to a random location while shooting a
 	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
     
 	if not path:IsValid() then return "failed" end
-	local timeout = CurTime() + math.random(2,3)
+	local timeout = CurTime() + math.random(5,8)
 
 	while path:IsValid() and self:HaveEnemy() and timeout > CurTime() do
 		if path:GetAge() > 0.1 then
@@ -244,7 +319,7 @@ function ENT:GoAwayFromEnemy() -- go far away from the enemy while shooting at t
 	path:Compute(self, self:GetEnemy():GetPos())
     
 	if not path:IsValid() then return "failed" end
-	local timeout = CurTime() + math.random(4,6)
+	local timeout = CurTime() + math.random(5,8)
 
 	while path:IsValid() and self:HaveEnemy() and timeout > CurTime() do
 		if path:GetAge() > 0.1 then
@@ -553,6 +628,7 @@ ENT.Vo.Footstep = {}
 ENT.Vo.Panic = { "vo/npc/male01/help01.wav", "vo/npc/male01/runforyourlife021.wav", "vo/npc/male01/runforyourlife02.wav", "vo/npc/male01/runforyourlife03.wav" }
 ENT.Vo.BehaviourFar = { "vo/npc/male01/holddownspot01.wav", "vo/npc/male01/illstayhere01.wav", "vo/npc/male01/holddownspot02.wav"}
 ENT.Vo.BehaviourCharge = { "vo/npc/male01/letsgo01.wav", "vo/npc/male01/letsgo02.wav", "vo/npc/male01/leadtheway01.wav", "vo/npc/male01/leadtheway02.wav"}
+ENT.Vo.HealAlly = { "vo/npc/male01/health01.wav", "vo/npc/male01/health02.wav", "vo/npc/male01/health03.wav", "vo/npc/male01/health04.wav", "vo/npc/male01/health05.wav" }
 ENT.Vo.Idle = {
 	"vo/npc/male01/question01.wav",
 	"vo/npc/male01/question02.wav",
@@ -586,6 +662,7 @@ ENT.Vo.Idle = {
 	"vo/npc/male01/question30.wav",
 	"vo/npc/male01/question31.wav"
 }
+
 
 list.Set("NPC", "raidman", {
 	Name = "Raid Enemy",

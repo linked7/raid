@@ -24,6 +24,15 @@ GM.EnemyTypes = {
 			["Weapon"] = "weapon_raid_shotgun",
 			["Health"] = 50,
 		},
+		["raidmedic_pistol"] = {
+			["NPC"] = "raidman",
+			["Weight"] = 1,
+			["Price"] = 0.6,
+			["Reward"] = 10,
+			["Weapon"] = "weapon_raid_pistol",
+			["Health"] = 40,
+			["Medic"] = true,
+		},
 	},
 	-- below are the previous iteration's enemies. these are all HL2 assets and not part of the asssignment
 	--[[["CCA"] = {
