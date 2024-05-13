@@ -584,7 +584,12 @@ function ENT:Think()
 		self:EmitSound(table.Random(self.Vo.Idle), 75, math.random(95,105), 1, CHAN_VOICE)
 	end
 
-	local speed = (self.loco:GetVelocity().x + self.loco:GetVelocity().y)%1
+	if( self.Medic and ( !self.NextRegen or self.NextRegen < CurTime() ) and self:Health() < self:GetMaxHealth() ) then
+		self.NextRegen = CurTime() + 1
+		self:SetHealth( math.min( self:Health() + 2 ) ) -- medics regen their own health at a rate of 2 per second
+	end
+
+	local speed = (self.loco:GetVelocity().x + self.loco:GetVelocity().y) % 1
 
 	if self.NextFootstep < CurTime() and speed>0.6 then
 		if self.Foot then
