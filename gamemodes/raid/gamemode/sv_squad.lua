@@ -196,6 +196,10 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				if( v["Medic"] ) then
 					npc.Medic = true
 				end
+				if( v["Models"] ) then
+					npc:SetModel( table.Random( v["Models"] ) )
+					npc.DoNotSetModel = true
+				end
 				npc:Spawn();
 				npc:Activate();
 
