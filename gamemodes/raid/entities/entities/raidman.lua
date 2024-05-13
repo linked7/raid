@@ -167,9 +167,9 @@ function ENT:RunBehaviour()
 		if( self:Health() < self:GetMaxHealth() / 1.5 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 1.5 ) then 
 			self:RunToRandomLocation() -- depending on how injured they are, run in panic
 		end
-		if( (self.Medic and math.random(1,100) > 1 ) or true ) then
+	--[[if( (self.Medic and math.random(1,10) > 1 ) or true ) then -- i was having serious trouble with this and have decided to disable it :(
 			self:HealAlly()
-		end
+		end--]]
 		if self:HaveEnemy() then
 			
 			self:StartActivity(ACT_HL2MP_WALK_PISTOL)
