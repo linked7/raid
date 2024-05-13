@@ -223,6 +223,12 @@ function ENT:HealAlly()
 		end
 	end
 
+	local timeout = CurTime() + math.random(5,8)
+	local path = Path("Follow")
+	path:SetMinLookAheadDistance(0)
+	path:SetGoalTolerance(20)
+	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+
 	if( patient and patient:IsValid() ) then
 
 		while path:IsValid() and self:HaveEnemy() and timeout > CurTime() and timeout > CurTime() do
@@ -230,11 +236,6 @@ function ENT:HealAlly()
 			self.Healing = true
 			self:StartActivity(ACT_RUN_STEALTH)
 			self.loco:SetDesiredSpeed(100)
-
-			local path = Path("Follow")
-			path:SetMinLookAheadDistance(0)
-			path:SetGoalTolerance(20)
-			path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
 
 			if path:GetAge() > 0.1 then
 				local vec = vec or self:GetPos()
@@ -262,12 +263,6 @@ function ENT:HealAlly()
 
 	end
 
-	timer.Simple(2.5, function()
-		if self:IsValid() then
-			self:Heal()
-			self.Healing = false
-		end
-	end)
 end
 
 function ENT:GoRandomWhileShooting() -- go to a random location while shooting at the enemy
