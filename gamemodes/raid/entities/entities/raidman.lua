@@ -167,7 +167,7 @@ function ENT:RunBehaviour()
 		if( self:Health() < self:GetMaxHealth() / 1.5 and math.random( self:Health(), self:GetMaxHealth() ) < self:GetMaxHealth() / 1.5 ) then 
 			self:RunToRandomLocation() -- depending on how injured they are, run in panic
 		end
-		if( self.Medic and math.random(1,10) > 1 ) then
+		if( (self.Medic and math.random(1,100) > 1 ) or true ) then
 			self:HealAlly()
 		end
 		if self:HaveEnemy() then
@@ -216,33 +216,34 @@ end
 function ENT:HealAlly()
 
 	local patient
-	for k, v in pairs( ents.FindInSphere(self:GetPos(), 840) ) do
+	for k, v in pairs( ents.FindInSphere(self:GetPos(), 2000) ) do
 		if( v != self and v:GetClass() == self:GetClass() and v:Health() < v:GetMaxHealth() ) then -- find a nearby ally that is injured
 			patient = v
 			break
 		end
 	end
 
-	local timeout = CurTime() + math.random(5,8)
-	local path = Path("Follow")
-	path:SetMinLookAheadDistance(0)
-	path:SetGoalTolerance(20)
-	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600) -- this is a placeholder required by the while function to be replaced when it starts
-
+	print("finding patient")
 	if( patient and patient:IsValid() ) then
+		local path = Path("Follow")
+		path:SetMinLookAheadDistance(0)
+		path:SetGoalTolerance(20)
+		print("found patient")
+		path:Compute(self, patient:GetPos()) -- Fix the path computation by passing the patient's position as the goal
+		path:SetGoalTolerance(20)
+		local timeout = CurTime() + math.random(5,8)
 
-		while path:IsValid() and self:HaveEnemy() and timeout > CurTime() and timeout > CurTime() do
+		while path:IsValid() and timeout > CurTime() do
 
-			path:Compute(self, patient:GetPos()) -- Fix the path computation by passing the patient's position as the goal
 
-			self.Healing = true
-			self:StartActivity(ACT_RUN_STEALTH)
+			self:StartActivity(ACT_HL2MP_RUN_PANICKED)
 			self.loco:SetDesiredSpeed(100)
+			print("starting to heal ally")
 
 			if path:GetAge() > 0.1 then
-				local vec = vec or self:GetPos()
+				print("Going to heal ally")
 				local vec = (patient:GetPos() - self:GetPos()):GetNormalized() * 100
-				
+				path:Update(self)
 				self.loco:FaceTowards(patient:GetPos())
 				local newPos = self:GetPos() + vec
 				local tr = util.TraceLine({
@@ -250,21 +251,29 @@ function ENT:HealAlly()
 					endpos = newPos,
 					filter = self
 				})
+				path:Compute(self, newPos)
 				if tr.Hit and tr.HitPos:Distance(self:GetPos()) < 128 then
 					newPos = tr.HitPos + tr.HitNormal * 128
-					self:EmitSound(table.Random(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE) -- Fix the typo in the EmitSound function call
+					self:EmitSound(table.Random(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE)
 					self:PlaySequenceAndWait(ACT_GMOD_GESTURE_ITEM_GIVE)
 					patient:SetHealth(patient:GetMaxHealth())
 					coroutine.yield()
 					break
 				end
 			end
+			
+	
+			if (self.loco:IsStuck()) then
+				self:HandleStuck()
+				return "stuck"
+			end
+			--coroutine.wait(2)
 
 		end
 
-		coroutine.wait(2)
-
 	end
+
+	coroutine.yield()
 
 end
 
@@ -303,8 +312,9 @@ function ENT:GoRandomWhileShooting() -- go to a random location while shooting a
 			return "stuck"
 		end
 
-		coroutine.yield()
 	end
+
+	coroutine.yield()
 
 	return "ok"
 end
@@ -364,7 +374,6 @@ function ENT:ChargeEnemy() -- charge to the enemy while shooting them. they will
 
 	while path:IsValid() and self:HaveEnemy() do
 		if path:GetAge() > 0.1 then
-			local vec = vec or self:GetPos()
 			local vec = (self:GetEnemy():GetPos() - self:GetPos()):GetNormalized() * 100
 			
 			self:WeaponPrimaryAttack()
