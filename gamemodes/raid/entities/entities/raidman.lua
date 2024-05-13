@@ -227,11 +227,13 @@ function ENT:HealAlly()
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(0)
 	path:SetGoalTolerance(20)
-	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
+	path:Compute(self, self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600) -- this is a placeholder required by the while function to be replaced when it starts
 
 	if( patient and patient:IsValid() ) then
 
 		while path:IsValid() and self:HaveEnemy() and timeout > CurTime() and timeout > CurTime() do
+
+			path:Compute(self, patient:GetPos()) -- Fix the path computation by passing the patient's position as the goal
 
 			self.Healing = true
 			self:StartActivity(ACT_RUN_STEALTH)
@@ -250,16 +252,17 @@ function ENT:HealAlly()
 				})
 				if tr.Hit and tr.HitPos:Distance(self:GetPos()) < 128 then
 					newPos = tr.HitPos + tr.HitNormal * 128
-					self:EmitSound(table.Randon(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE)
+					self:EmitSound(table.Random(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE) -- Fix the typo in the EmitSound function call
 					self:PlaySequenceAndWait(ACT_GMOD_GESTURE_ITEM_GIVE)
 					patient:SetHealth(patient:GetMaxHealth())
+					coroutine.yield()
 					break
 				end
 			end
 
 		end
 
-		coroutine.yield()
+		coroutine.wait(2)
 
 	end
 
