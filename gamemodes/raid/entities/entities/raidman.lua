@@ -214,7 +214,6 @@ function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not
 end
 
 function ENT:HealAlly()
-
 	local patient
 	for k, v in pairs( ents.FindInSphere(self:GetPos(), 2000) ) do
 		if( v != self and v:GetClass() == self:GetClass() and v:Health() < v:GetMaxHealth() ) then -- find a nearby ally that is injured
@@ -234,8 +233,6 @@ function ENT:HealAlly()
 		local timeout = CurTime() + math.random(5,8)
 
 		while path:IsValid() and timeout > CurTime() do
-
-
 			self:StartActivity(ACT_HL2MP_RUN_PANICKED)
 			self.loco:SetDesiredSpeed(100)
 			print("starting to heal ally")
@@ -262,19 +259,15 @@ function ENT:HealAlly()
 				end
 			end
 			
-	
 			if (self.loco:IsStuck()) then
 				self:HandleStuck()
 				return "stuck"
 			end
 			--coroutine.wait(2)
-
 		end
-
 	end
 
 	coroutine.yield()
-
 end
 
 function ENT:GoRandomWhileShooting() -- go to a random location while shooting at the enemy
@@ -495,6 +488,9 @@ function ENT:OnInjured(info)
 	end
 	self.NextFire = CurTime()+0.4
 	self:EmitSound(table.Random(self.Vo.Pain), 75, math.random(95,105), 1, CHAN_VOICE)
+	if( self.Idle == IDLETYPE_IDLE ) then
+		self.Idle = IDLETYPE_INTERUPT
+	end
 end
 
 function ENT:OnKilled(dmginfo)
