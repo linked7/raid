@@ -135,7 +135,7 @@ GM.Arenas = {
 	"arena4"
 };
 
-GM.OtherEnts = {
+GM.MapEnts = {
 	{ Vector( -591, -229, 1 ), Angle( 0, 90, 0), "raid_startbutton" },
 	{ Vector( -535, 126, 9 ), Angle( 0, -90, 0 ), "raid_shop" },
 	{ Vector( -475, 126, 9 ), Angle( 0, -90, 0 ), "raid_shop" },
