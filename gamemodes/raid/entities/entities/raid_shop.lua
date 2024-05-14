@@ -8,6 +8,7 @@ ENT.Author			= "Linked";
 ENT.Contact			= "";
 ENT.Purpose			= "";
 ENT.Instructions	= "";
+ENT.Interesting = true;
 
 ENT.Spawnable			= false;
 ENT.AdminSpawnable		= false;
