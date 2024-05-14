@@ -5,8 +5,6 @@ GM.Website = "N/A";
 
 DeriveGamemode( "base" );
 
--- init system below made by jane i believe
-
 local cfiles = file.Find( GM.FolderName .. "/gamemode/*.lua", "LUA", "namedesc" );
 
 table.RemoveByValue( cfiles, "sh_setup.lua" );

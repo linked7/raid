@@ -31,7 +31,7 @@ GM.Shop = {
 	},
 };
 
-GM.Weapons = {
+GM.Weapons = { -- second value is the danger level increase for each weapon
 	{ "weapon_crowbar", 0.5 }, -- base player threat
 	{ "weapon_pistol", 0.25 },
 	{ "weapon_smg1", 0.25 },
@@ -43,7 +43,7 @@ GM.Weapons = {
 	{ "weapon_rpg", 0.25 },
 	{ "weapon_frag", 0.25 },
 	{ "weapon_bugbait", 0 }, -- maybe bugbait should be an investment to lower threat
-	{ "weapon_bfg_beta_spas", 0.25 },
+	{ "weapon_bfg_beta_spas", 0.25 }, -- I briefly experimented with a workshop addon's weapons but was not happy with their balence.
 	{ "weapon_bfg_mp7", 0.35 },
 	{ "weapon_bfg_smg2", 0.35 },
 	{ "weapon_bfg_assasin_pistols", 0.35 },

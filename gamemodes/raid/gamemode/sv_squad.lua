@@ -17,7 +17,6 @@ function GM:StartRaid()
 	self.SquadState = STATE_ACTIVE
 
 	local enemyType = table.Random( self.EnemyTypes )
-	local enemyType = table.Copy( self.EnemyTypes["Custom"] )
 
 	local location = table.Random( self.Arenas )
 
@@ -150,7 +149,7 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 
 		if( #unusedSpawns <= 0 ) then
 
-			print( "PopulateLocation ran out of spawn points!")
+			--print( "PopulateLocation ran out of spawn points!")
 			upgradeNPCs = true -- no spawn points, let's upgrade existing npcs
 
 		end
@@ -174,9 +173,9 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				npc.Reward = npc.Reward * 2 -- double the reward
 
 				dangerLevel = dangerLevel - 0.5
-				--bust = bust + 1
+				--bust = bust + 1 -- bust does not need to be incremented on upgrade.
 
-				print( "Upgrading NPC " .. npc:GetClass() )
+				--print( "Upgrading NPC " .. npc:GetClass() )
 
 			else
 

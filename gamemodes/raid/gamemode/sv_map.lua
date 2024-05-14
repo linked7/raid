@@ -18,24 +18,21 @@ else
 end
 
 function GM:InitPostEntity()
-
 	if( self.MapEnts ) then
-
 		for _, v in pairs( self.MapEnts ) do
 
-			local purpose = ents.Create( v[3] );
-			purpose:SetPos( v[1] );
-			purpose:SetAngles( v[2] );
+			local ent = ents.Create( v[3] );
+			ent:SetPos( v[1] );
+			ent:SetAngles( v[2] );
 
-			purpose:Spawn();
-			purpose:Activate();
-			if( purpose and purpose:IsValid() and purpose:GetPhysicsObject() and purpose:GetPhysicsObject():IsValid() ) then
-				purpose:GetPhysicsObject():EnableMotion( false );
-				purpose.Static = true;
+			ent:Spawn();
+			ent:Activate();
+			if( ent and ent:IsValid() and ent:GetPhysicsObject() and ent:GetPhysicsObject():IsValid() ) then
+				ent:GetPhysicsObject():EnableMotion( false );
+				ent.Static = true;
 			end
 
 		end
-
+		
 	end
-
 end

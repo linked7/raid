@@ -12,18 +12,6 @@ ENT.Instructions	= "";
 ENT.Spawnable			= false;
 ENT.AdminSpawnable		= false;
 
-ENT.Interesting 		= true;
-
-function ENT:PostEntityPaste( ply, ent, tab )
-	
-	GAMEMODE:LogSecurity( ply:SteamID(), "n/a", ply:VisibleRPName(), "Tried to duplicate " .. ent:GetClass() .. "!" );
-	ent:Remove();
-	
-end
-
-function ENT:SetupDataTables()
-end
-
 function ENT:CanPhysgun()
 
 	return false;
@@ -55,7 +43,7 @@ function ENT:Think()
 	
 end
 
-function ENT:Use( ply )
+function ENT:Use( ply ) -- begin the raid!
 
 	if( CLIENT ) then return end
 
@@ -76,7 +64,7 @@ function ENT:Use( ply )
 
 		end )
 
-	elseif( GAMEMODE.SquadState == STATE_IDLE ) then
+	elseif( GAMEMODE.SquadState == STATE_IDLE ) then -- please don't spam the button :(
 
 		self:EmitSound( "ambient/alarms/klaxon1.wav", 60 );
 
