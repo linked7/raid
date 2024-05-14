@@ -8,42 +8,6 @@ function ENT:SetupDataTables()
 	self:NetworkVar( "Entity", 0, "ActiveWeapon" )
 end
 
-ENT.RebelModels = {
-	"models/player/Group03/male_01.mdl",
-	"models/player/Group03/male_02.mdl",
-	"models/player/Group03/male_03.mdl",
-	"models/player/Group03/male_04.mdl",
-	"models/player/Group03/male_05.mdl",
-	"models/player/Group03/male_06.mdl",
-	"models/player/Group03/male_07.mdl",
-	"models/player/Group03/male_08.mdl",
-	"models/player/Group03/male_09.mdl",
-	"models/player/Group03/female_01.mdl",
-	"models/player/Group03/female_02.mdl",
-	"models/player/Group03/female_03.mdl",
-	"models/player/Group03/female_04.mdl",
-	"models/player/Group03/female_05.mdl",
-	"models/player/Group03/female_06.mdl",
-}
-
-ENT.MedicModels = {
-	"models/player/Group03m/male_01.mdl",
-	"models/player/Group03m/male_02.mdl",
-	"models/player/Group03m/male_03.mdl",
-	"models/player/Group03m/male_04.mdl",
-	"models/player/Group03m/male_05.mdl",
-	"models/player/Group03m/male_06.mdl",
-	"models/player/Group03m/male_07.mdl",
-	"models/player/Group03m/male_08.mdl",
-	"models/player/Group03m/male_09.mdl",
-	"models/player/Group03m/female_01.mdl",
-	"models/player/Group03m/female_02.mdl",
-	"models/player/Group03m/female_03.mdl",
-	"models/player/Group03m/female_04.mdl",
-	"models/player/Group03m/female_05.mdl",
-	"models/player/Group03m/female_06.mdl"
-}
-
 function ENT:Initialize()
 	if( SERVER ) then
 		if( not self.DoNotSetModel ) then
@@ -488,10 +452,6 @@ function ENT:GetAimAnim()
 
 end
 
-----------------------------------------------------
--- ENT:HaveEnemy()
--- Returns true if we have an enemy
-----------------------------------------------------
 function ENT:HaveEnemy()
 	-- If our current enemy is valid
 	if ( self:GetEnemy() and IsValid(self:GetEnemy()) ) then
@@ -515,18 +475,13 @@ function ENT:HaveEnemy()
 	end
 end
 
-----------------------------------------------------
--- ENT:FindEnemy()
--- Returns true and sets our enemy if we find one
-----------------------------------------------------
 function ENT:FindEnemy()
-	-- Search around us for entities
 	-- This can be done any way you want eg. ents.FindInCone() to replicate eyesighti
 	local angle = 0.707 -- costign angle. if this is 0.707 the NPC should have a 90deg field of view
-	local _ents = ents.FindInCone( self:GetPos(), self:GetForward(), self.SearchRadius, angle )
+	local ents = ents.FindInCone( self:GetPos(), self:GetForward(), self.SearchRadius, angle )
 
 	-- Here we loop through every entity the above search finds and see if it's the one we want
-	for k,v in ipairs( _ents ) do
+	for k,v in ipairs( ents ) do
 		if ( v:IsPlayer() ) then
 			-- We found one so lets set it as our enemy and return true
 			if self:Visible(v) then
@@ -653,10 +608,9 @@ function ENT:Think()
 		end
 
 		local healsound = false
-		for k, v in pairs( ents.FindInSphere(self:GetPos(), 128 ) ) do
+		for k, v in pairs( ents.FindInSphere(self:GetPos(), 128 ) ) do -- this was done as a replacement for the HealAlly function, which is currently disabled
 			if( v != self and v:GetClass() == self:GetClass() and v:Health() < v:GetMaxHealth() ) then -- find a nearby ally that is injured
 				v:SetHealth( math.min( v:Health() + 5, v:GetMaxHealth() ) ) -- heal the ally at a rate of 2 per second
-				print("Healing ally")
 				local healsound = true
 			end
 		end
@@ -667,7 +621,7 @@ function ENT:Think()
 
 	local speed = (self.loco:GetVelocity().x + self.loco:GetVelocity().y) % 1
 
-	if self.NextFootstep < CurTime() and speed>0.6 then
+--[[if self.NextFootstep < CurTime() and speed>0.6 then
 		if self.Foot then
 			self:EmitSound("NPC_Citizen.FootstepLeft")
 		else
@@ -675,7 +629,7 @@ function ENT:Think()
 		end
 		self.NextFootstep = CurTime()+0.6
 		self.Foot = !self.Foot
-	end
+	end--]]
 end
 
 --[[function ENT:Touch(ent) -- this function doesn't work with nextbots, this was an attempt to prevent the NPC from getting stuck on objects
@@ -747,6 +701,41 @@ ENT.Vo.Idle = {
 	"vo/npc/male01/question31.wav"
 }
 
+ENT.RebelModels = {
+	"models/player/Group03/male_01.mdl",
+	"models/player/Group03/male_02.mdl",
+	"models/player/Group03/male_03.mdl",
+	"models/player/Group03/male_04.mdl",
+	"models/player/Group03/male_05.mdl",
+	"models/player/Group03/male_06.mdl",
+	"models/player/Group03/male_07.mdl",
+	"models/player/Group03/male_08.mdl",
+	"models/player/Group03/male_09.mdl",
+	"models/player/Group03/female_01.mdl",
+	"models/player/Group03/female_02.mdl",
+	"models/player/Group03/female_03.mdl",
+	"models/player/Group03/female_04.mdl",
+	"models/player/Group03/female_05.mdl",
+	"models/player/Group03/female_06.mdl",
+}
+
+ENT.MedicModels = {
+	"models/player/Group03m/male_01.mdl",
+	"models/player/Group03m/male_02.mdl",
+	"models/player/Group03m/male_03.mdl",
+	"models/player/Group03m/male_04.mdl",
+	"models/player/Group03m/male_05.mdl",
+	"models/player/Group03m/male_06.mdl",
+	"models/player/Group03m/male_07.mdl",
+	"models/player/Group03m/male_08.mdl",
+	"models/player/Group03m/male_09.mdl",
+	"models/player/Group03m/female_01.mdl",
+	"models/player/Group03m/female_02.mdl",
+	"models/player/Group03m/female_03.mdl",
+	"models/player/Group03m/female_04.mdl",
+	"models/player/Group03m/female_05.mdl",
+	"models/player/Group03m/female_06.mdl"
+}
 
 list.Set("NPC", "raidman", {
 	Name = "Raid Enemy",
