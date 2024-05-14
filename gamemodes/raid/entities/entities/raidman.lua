@@ -46,20 +46,23 @@ ENT.MedicModels = {
 
 function ENT:Initialize()
 	if( SERVER ) then
-		local models = self.RebelModels
+		if( not self.DoNotSetModel ) then
+			local models = self.RebelModels
 
-		if( self.Medic ) then
-			models = self.MedicModels
+			if( self.Medic ) then
+				models = self.MedicModels
+			end
+
+			local model = table.Random( models )
+
+			if( not util.IsValidModel( model ) ) then
+				print( "ERROR! INVALID MODEL: " .. model)
+				model = "models/player/Group03/male_07.mdl"
+			end
+
+			self:SetModel( model ) 
+		
 		end
-
-		local model = table.Random( models )
-
-		if( not util.IsValidModel( model ) ) then
-			print( "ERROR! INVALID MODEL: " .. model)
-			model = "models/player/Group03/male_07.mdl"
-		end
-
-		self:SetModel( model ) 
 
 	end 
 	self.LoseTargetDist	= 1200 -- these are largely obsolute for the size of the arenas, but will be kept for furture compatibility
@@ -71,7 +74,7 @@ function ENT:Initialize()
 	self.NextCrouch = CurTime()
 
 	self.Healing = false
-	self.Foot = false
+	self.NextGrenade = CurTime()
 
 	self.Idle = IDLETYPE_IDLE
 	if string.find(self:GetModel(), "female") then
@@ -159,6 +162,12 @@ function ENT:BodyUpdate()
 	self:BodyMoveXY()
 end
 
+ENT.Behaviours = { 
+	function( ent ) ent:ChargeEnemy() end,
+	function( ent ) ent:GoAwayFromEnemy() end,
+--function() self:GoRandomWhileShooting() end,
+}
+
 -- This is where the meat of our AI is
 function ENT:RunBehaviour()
 	local wep = self:GetActiveLuaWeapon()
@@ -177,19 +186,12 @@ function ENT:RunBehaviour()
 			self.loco:SetDesiredSpeed(50)
 			self.NextFire = CurTime()+1
 
-		--[[]	if( true or self:GetGrenades() > 0 ) then
-				print("Thinking about throwing grenade")
+			if( self:GetGrenades() > 0 ) then
 				self.loco:FaceTowards(self.Enemy:GetPos())
-				--self:ThrowGrenade()
+				self:ThrowGrenade()
+			end
 
-			end--]]
-
-			local behaviours = { -- this functions as a switch statement substitue in lua
-				function() self:ChargeEnemy() end,
-				function() self:GoAwayFromEnemy() end,
-				function() self:GoRandomWhileShooting() end,
-			}
-			table.Random(behaviours)() -- choose a random behaviour
+			table.Random(self.Behaviours)(self) -- choose a random behaviour
 
 		else
 
@@ -201,8 +203,7 @@ function ENT:RunBehaviour()
 
 			if self.Idle == IDLETYPE_INTERUPT then
 				self.Idle = IDLETYPE_ACTIVE 
-				coroutine.yield()
-				break
+				table.Random(self.Behaviours)(self)
 			end
 
 		end
@@ -235,7 +236,12 @@ end
 
 function ENT:ThrowGrenade()
 	if (CLIENT) then return; end
-	print("Throwing grenade")
+	if( self.NextGrenade > CurTime() ) then return end
+	self.Grenades = self.Grenades - 1
+	self.NextGrenade = CurTime() + 1
+
+	self:RestartGesture(ACT_MP_GRENADE1_ATTACK);
+
 	local vecEye = self:EyePos();
 	local vForward = self:GetForward();
 	local vRight = self:GetRight();
@@ -262,8 +268,9 @@ function ENT:ThrowGrenade()
 		end
 	end
 
-	self:EmitSound("weapons/crossbow/hit1.wav");
-	self:SetAnimation(PLAYER_ATTACK1);
+	grenade:EmitSound("weapons/crossbow/hit1.wav"); -- this is my choice of a 'pin pulled' sound
+	--coroutine.yield()
+
 end
 
 function ENT:HealAlly()
@@ -554,6 +561,10 @@ function ENT:OnKilled(dmginfo)
 end
 
 function ENT:Reload()
+	if( self:GetGrenades() > 0 ) then
+		self.loco:FaceTowards(self.Enemy:GetPos())
+		self:ThrowGrenade()
+	end
 	local wep = self:GetActiveLuaWeapon()
 	if wep.Reloading then return end
 	self:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_REVOLVER)
@@ -579,9 +590,6 @@ function ENT:WeaponPrimaryAttack()
 	if wep.CurAmmo <= 0 then
 		self:Reload()
 		return
-	end
-	if false and self:Health()<=30 then
-		self:Heal()
 	end
 
 	local trace = {}
@@ -637,9 +645,24 @@ function ENT:Think()
 		self:EmitSound(table.Random(self.Vo.Idle), 75, math.random(95,105), 1, CHAN_VOICE)
 	end
 
-	if( self.Medic and ( !self.NextRegen or self.NextRegen < CurTime() ) and self:Health() < self:GetMaxHealth() ) then
+	if( self.Medic and ( !self.NextRegen or self.NextRegen < CurTime() )  ) then
 		self.NextRegen = CurTime() + 1
-		self:SetHealth( math.min( self:Health() + 2 ) ) -- medics regen their own health at a rate of 2 per second
+
+		if( self:Health() < self:GetMaxHealth() ) then 
+			self:SetHealth( math.min( self:Health() + 2 ) ) -- medics regen their own health at a rate of 2 per second
+		end
+
+		local healsound = false
+		for k, v in pairs( ents.FindInSphere(self:GetPos(), 128 ) ) do
+			if( v != self and v:GetClass() == self:GetClass() and v:Health() < v:GetMaxHealth() ) then -- find a nearby ally that is injured
+				v:SetHealth( math.min( v:Health() + 5, v:GetMaxHealth() ) ) -- heal the ally at a rate of 2 per second
+				print("Healing ally")
+				local healsound = true
+			end
+		end
+		if( healsound ) then
+			self:EmitSound(table.Random(self.Vo.HealAlly), 75, math.random(95,105), 1, CHAN_VOICE)
+		end
 	end
 
 	local speed = (self.loco:GetVelocity().x + self.loco:GetVelocity().y) % 1
