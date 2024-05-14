@@ -8,6 +8,7 @@ ENT.Purpose = "";
 ENT.Instructions = "";
 ENT.Spawnable = false;
 ENT.AdminSpawnable = false;
+ENT.Timer = 2.5
 
 function ENT:SetTimer(dDelay)
 	self.DetonateTime = CurTime() + dDelay;
@@ -28,6 +29,8 @@ function ENT:Initialize()
 	if (phys and phys:IsValid()) then
 		phys:Wake();
 	end
+
+	local trail = util.SpriteTrail( self, 0, Color( 255, 0, 0 ), false, 2, 1, 4, 1 / ( 15 + 1 ) * 0.5, "trails/plasma" )
 end
 
 function ENT:OnTakeDamage(dmginfo)

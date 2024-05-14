@@ -49,7 +49,6 @@ function ENT:Initialize()
 		local models = self.RebelModels
 
 		if( self.Medic ) then
-			print("I'm a medic!") 
 			models = self.MedicModels
 		end
 
@@ -79,6 +78,10 @@ function ENT:Initialize()
 		self:SwapGender()
 	end
 
+end
+
+function ENT:GetGrenades()
+	return self.Grenades or 0
 end
 
 IDLETYPE_IDLE = 	1
@@ -156,10 +159,7 @@ function ENT:BodyUpdate()
 	self:BodyMoveXY()
 end
 
-----------------------------------------------------
--- ENT:RunBehaviour()
 -- This is where the meat of our AI is
-----------------------------------------------------
 function ENT:RunBehaviour()
 	local wep = self:GetActiveLuaWeapon()
 	while true do
@@ -176,6 +176,13 @@ function ENT:RunBehaviour()
 			self:SetPoseParameter("aim_pitch",0)
 			self.loco:SetDesiredSpeed(50)
 			self.NextFire = CurTime()+1
+
+		--[[]	if( true or self:GetGrenades() > 0 ) then
+				print("Thinking about throwing grenade")
+				self.loco:FaceTowards(self.Enemy:GetPos())
+				--self:ThrowGrenade()
+
+			end--]]
 
 			local behaviours = { -- this functions as a switch statement substitue in lua
 				function() self:ChargeEnemy() end,
@@ -211,6 +218,52 @@ function ENT:RunToRandomLocation() -- injured behaviour (run in panic), does not
 	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * 600)
 	coroutine.yield()
 	return "ok"
+end
+
+function ENT:CheckThrowPosition(eye, src)
+	local trace = { };
+	trace.start = eye;
+	trace.endpos = src;
+	trace.mins = Vector(-4, -4, -4);
+	trace.maxs = Vector(4, 4, 4);
+	trace.filter = ply;
+	local tr = util.TraceHull(trace);
+	if (tr.Hit) then return tr.HitPos; end
+
+	return src;
+end
+
+function ENT:ThrowGrenade()
+	if (CLIENT) then return; end
+	print("Throwing grenade")
+	local vecEye = self:EyePos();
+	local vForward = self:GetForward();
+	local vRight = self:GetRight();
+	local vecSrc = vecEye + vForward * 18 + vRight * 8;
+	vecSrc = self:CheckThrowPosition(vecEye, vecSrc);
+	vForward.z = vForward.z + 0.1;
+	local vecThrow = self:GetVelocity();
+	vecThrow = vecThrow + vForward * 1200;
+	local grenade = ents.Create("raid_grenade");
+	grenade:SetPos(vecSrc);
+	grenade:SetAngles(Angle());
+	grenade:SetVelocity(vecThrow);
+	grenade:Spawn();
+	grenade:Activate();
+	grenade:SetTimer(grenade.Timer);
+	grenade.Thrower = self;
+
+	if (grenade and grenade:IsValid()) then
+		local phys = grenade:GetPhysicsObject();
+
+		if (phys and phys:IsValid()) then
+			phys:SetVelocity(vecThrow);
+			phys:AddAngleVelocity(Vector(600, math.random(-1200, 1200), 0));
+		end
+	end
+
+	self:EmitSound("weapons/crossbow/hit1.wav");
+	self:SetAnimation(PLAYER_ATTACK1);
 end
 
 function ENT:HealAlly()
@@ -497,7 +550,7 @@ function ENT:OnKilled(dmginfo)
 	self:EmitSound(table.Random(self.Vo.Die), 75, math.random(95,105), 1, CHAN_VOICE)
 	local rag = self:BecomeRagdoll(dmginfo)
 	hook.Call("OnNPCKilled", GAMEMODE, self, dmginfo:GetAttacker(), dmginfo:GetInflictor())
-	SafeRemoveEntityDelayed(self, 0.01)
+	SafeRemoveEntityDelayed(self, 0.0)
 end
 
 function ENT:Reload()
