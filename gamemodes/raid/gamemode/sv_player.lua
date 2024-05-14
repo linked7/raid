@@ -87,7 +87,8 @@ function GM:DoPlayerDeath( ply, attacker, inf )
 
 	if( attacker:IsPlayer() and attacker:IsValid() and attacker != ply ) then
 
-		attacker.Money = attacker.Money * 0.6
+		attacker.Money = attacker.Money * 0
+		attacker:ChatPrint( "You killed " .. ply:Nick() .. "! That's terrible!!")
 
 		net.Start( "nUpdateMoney" );
 			net.WriteUInt( ply.Money, 32 );
