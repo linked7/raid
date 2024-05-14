@@ -512,7 +512,7 @@ function ENT:OnKilled(dmginfo)
 	self:EmitSound(table.Random(self.Vo.Die), 75, math.random(95,105), 1, CHAN_VOICE)
 	local rag = self:BecomeRagdoll(dmginfo)
 	hook.Call("OnNPCKilled", GAMEMODE, self, dmginfo:GetAttacker(), dmginfo:GetInflictor())
-	SafeRemoveEntityDelayed(self, 0.0)
+	SafeRemoveEntityDelayed(self, 0.05)
 end
 
 function ENT:Reload()
