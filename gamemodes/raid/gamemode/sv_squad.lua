@@ -78,7 +78,7 @@ function GM:EndRaid()
 		self:InitPostEntity()
 		for k, v in pairs( player.GetAll() ) do
 
-			v:SetPos( table.Random( self.Spawns ) )
+			v:SetPos( table.Random( self.Spawns ) + Vector(0, 0, math.random(0,5) ) )
 
 			if( v:Alive() ) then
 
