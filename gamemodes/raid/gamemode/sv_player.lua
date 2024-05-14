@@ -108,7 +108,7 @@ function GM:DoPlayerDeath( ply, attacker, inf )
 		net.WriteUInt( ply.Money, 32 );
 	net.Send( ply )
 
-	if( table.HasValue(self. ActiveRaiders, ply ) ) then 
+	if( table.HasValue(self.ActiveRaiders, ply ) ) then 
 		
 		table.RemoveByValue( self.ActiveRaiders, ply )
 
