@@ -202,7 +202,7 @@ function ENT:ThrowGrenade()
 	if (CLIENT) then return; end
 	if( self.NextGrenade > CurTime() ) then return end
 	self.Grenades = self.Grenades - 1
-	self.NextGrenade = CurTime() + 1
+	self.NextGrenade = CurTime() + 2
 
 	self:RestartGesture(ACT_MP_GRENADE1_ATTACK);
 

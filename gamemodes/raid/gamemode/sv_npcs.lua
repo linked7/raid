@@ -57,10 +57,10 @@ GM.EnemyTypes = {
 			["Models"] = {"models/player/phoenix.mdl", "models/player/guerilla.mdl"},
 			["Weight"] = 3,
 			["Price"] = 1.5,
-			["Reward"] = 40,
+			["Reward"] = 50,
 			["Weapon"] = "weapon_raid_heavyshotgun",
 			["Health"] = 150,
-			["Grenades"] = 5,
+			["Grenades"] = 10,
 		},
 	},
 	-- below are the previous iteration's enemies. these are all HL2 assets and not part of the asssignment
