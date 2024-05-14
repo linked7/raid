@@ -19,17 +19,9 @@ end
 
 function GM:InitPostEntity()
 
-	local ent = ents.FindByClass( "func_dustmotes" );
+	if( self.MapEnts ) then
 
-	for k, v in pairs( ent ) do
-
-		v:Remove();
-
-	end
-
-	if( self.OtherEnts ) then
-
-		for _, v in pairs( self.OtherEnts ) do
+		for _, v in pairs( self.MapEnts ) do
 
 			local purpose = ents.Create( v[3] );
 			purpose:SetPos( v[1] );
