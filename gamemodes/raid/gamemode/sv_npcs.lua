@@ -2,7 +2,7 @@ GM.EnemyTypes = {
 	["Custom"] = {
 		["raidman_pistol"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 4,
+			["Weight"] = 8,
 			["Price"] = 0.2,
 			["Reward"] = 5,
 			["Weapon"] = "weapon_raid_pistol",
@@ -10,7 +10,7 @@ GM.EnemyTypes = {
 		},
 		["raidman_smg"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 2,
+			["Weight"] = 6,
 			["Price"] = 0.6,
 			["Reward"] = 8,
 			["Weapon"] = "weapon_raid_smg",
@@ -18,7 +18,7 @@ GM.EnemyTypes = {
 		},
 		["raidman_shotgun"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 1,
+			["Weight"] = 3,
 			["Price"] = 0.8,
 			["Reward"] = 10,
 			["Weapon"] = "weapon_raid_shotgun",
@@ -26,12 +26,21 @@ GM.EnemyTypes = {
 		},
 		["raidmedic_pistol"] = {
 			["NPC"] = "raidman",
-			["Weight"] = 1,
-			["Price"] = 0.6,
+			["Weight"] = 3,
+			["Price"] = 0.3,
 			["Reward"] = 10,
 			["Weapon"] = "weapon_raid_pistol",
 			["Health"] = 40,
 			["Medic"] = true,
+		},
+		["soldier_shotgun"] = {
+			["NPC"] = "raidman",
+			["Models"] = {"models/player/phoenix.mdl", "models/player/guerilla.mdl"},
+			["Weight"] = 1,
+			["Price"] = 2.5,
+			["Reward"] = 10,
+			["Weapon"] = "weapon_raid_shotgun",
+			["Health"] = 150,
 		},
 	},
 	-- below are the previous iteration's enemies. these are all HL2 assets and not part of the asssignment
