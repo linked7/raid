@@ -108,6 +108,20 @@ function GM:DoPlayerDeath( ply, attacker, inf )
 		net.WriteUInt( ply.Money, 32 );
 	net.Send( ply )
 
+	if( table.HasValue(self. ActiveRaiders, ply ) ) then 
+		
+		table.RemoveByValue( self.ActiveRaiders, ply )
+
+		if( table.IsEmpty( self.ActiveRaiders ) ) then
+
+			attacker:EmitSound( "buttons/button1.wav", 90 )
+
+			timer.Simple( 1, function() self:EndRaid() end )
+
+		end
+
+	end
+
 end
 
 GM.BannedWeaponPickups = {

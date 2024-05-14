@@ -73,6 +73,7 @@ function GM:EndRaid()
 	RunConsoleCommand( "gmod_admin_cleanup" ) -- reset the map
 
 	self.ActiveEnemies = {};
+	self.ActiveRaiders = {};
 
 	timer.Simple( 0.05 , function()
 		self:InitPostEntity()
