@@ -206,6 +206,9 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				if( v["Weapon"] ) then
 					npc:Give( v["Weapon"] )
 				end
+				if( v["Grenades"] ) then
+					npc.Grenades = v["Grenades"]
+				end
 
 			--[[if( v["Rebel"] and v["Rebel"] == true ) then
 
