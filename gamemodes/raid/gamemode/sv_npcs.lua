@@ -107,6 +107,7 @@ GM.EnemyTypes = {
 			["Reward"] = 2,
 		},
 	},
+	--[[
 	["Rebels"] = {
 		["npc_citizen_pistol"] = {
 			["NPC"] = "npc_citizen",
@@ -145,7 +146,7 @@ GM.EnemyTypes = {
 			["Price"] = 1.3,
 			["Reward"] = 18,
 		},
-	},
+	},--]]
 	["COTA"] = {
 		["combine_smg"] = {
 			["NPC"] = "npc_combine_s",
