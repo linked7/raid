@@ -17,7 +17,6 @@ function GM:StartRaid()
 	self.SquadState = STATE_ACTIVE
 
 	local enemyType = table.Random( self.EnemyTypes )
-	enemyType = self.EnemyTypes["CCA"]
 
 	local location = table.Random( self.Arenas )
 
