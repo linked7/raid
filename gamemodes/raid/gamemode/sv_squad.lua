@@ -17,6 +17,7 @@ function GM:StartRaid()
 	self.SquadState = STATE_ACTIVE
 
 	local enemyType = table.Random( self.EnemyTypes )
+	enemyType = self.EnemyTypes["CCA"]
 
 	local location = table.Random( self.Arenas )
 
@@ -208,6 +209,10 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				end
 				if( v["Grenades"] ) then
 					npc.Grenades = v["Grenades"]
+				end
+				if( v["Manhack"] ) then
+					npc:SetKeyValue("manhacks", "1")
+					print("manhack")
 				end
 
 			--[[if( v["Rebel"] and v["Rebel"] == true ) then
