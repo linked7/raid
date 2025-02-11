@@ -209,6 +209,9 @@ function GM:PopulateLocation( location, dangerLevel, enemyType ) -- spawning npc
 				end
 				if( v["Grenades"] ) then
 					npc.Grenades = v["Grenades"]
+					if( npc:GetClass() == "npc_combine_s") then 
+						npc:SetKeyValue("NumGrenades", tostring(v["Grenades"]))
+					end
 				end
 				if( v["Manhack"] ) then
 					npc:SetKeyValue("manhacks", "1")

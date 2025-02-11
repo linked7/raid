@@ -161,6 +161,7 @@ GM.EnemyTypes = {
 			["Weight"] = 4,
 			["Price"] = 0.7,
 			["Reward"] = 15,
+			["Grenades"] = 2,
 		},
 		["combine_ar2"] = {
 			["NPC"] = "npc_combine_s",
@@ -168,6 +169,7 @@ GM.EnemyTypes = {
 			["Weight"] = 4,
 			["Price"] = 1.2,
 			["Reward"] = 18,
+			["Grenades"] = 2,
 		},
 		["combine_elite"] = {
 			["NPC"] = "npc_combine_s",
@@ -178,6 +180,7 @@ GM.EnemyTypes = {
 			["CustomModel"] = "models/combine_super_soldier.mdl",
 			["DamageScale"] = 1.6,
 			["HealthScale"] = 2,
+			["Grenades"] = 3,
 		},
 		["npc_manhack"] = {
 			["NPC"] = "npc_manhack",
