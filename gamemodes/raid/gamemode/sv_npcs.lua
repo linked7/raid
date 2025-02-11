@@ -63,9 +63,7 @@ GM.EnemyTypes = {
 			["Grenades"] = 10,
 		},
 	},
-	-- below are the previous iteration's enemies. these are all HL2 assets and not part of the asssignment
-	--[[["CCA"] = {
-		--[[
+	["CCA"] = {
 		["cop_stunstick"] = {
 			["NPC"] = "npc_metropolice",
 			["Weapon"] = "weapon_stunstick",
